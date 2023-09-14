@@ -41,8 +41,9 @@ songjiaxin@SongJiaxin:~/Code/ECE2800J/Lesson$  (当前) cd -
 songjiaxin@SongJiaxin:~/Code$ (返回上一次访问的)
 
 `cd`只能访问文件夹, 不能访问单个文件
+*/
 
-
+/*
 `ls` list
 `ls`显示当前文件夹中所有子文件
 songjiaxin@SongJiaxin:~/Code/ECE2800J$ ls
@@ -75,5 +76,39 @@ songjiaxin@SongJiaxin:~/Code/ECE2800J$ ls
 Lesson  Projects  README.md  hi  hi.cpp
 列出带 `.`和`..`的 hidden file
 
+`ls -la` 把`ls -l`和`ls -a`结合起来
+*/
+
+/*
+Create directories: mkdir dir
+songjiaxin@SongJiaxin:~/Code/ECE2800J$ ls
+Lesson  Projects  README.md  hi.cpp
+songjiaxin@SongJiaxin:~/Code/ECE2800J$ mkdir dir
+songjiaxin@SongJiaxin:~/Code/ECE2800J$ ls
+Lesson  Projects  README.md  dir  hi.cpp
+
+
+Delete directories: rmdir dir
+songjiaxin@SongJiaxin:~/Code/ECE2800J$ ls
+Lesson  Projects  README.md  dir  hi.cpp
+songjiaxin@SongJiaxin:~/Code/ECE2800J$ rmdir dir
+songjiaxin@SongJiaxin:~/Code/ECE2800J$ ls
+Lesson  Projects  README.md  hi.cpp
+Can only remove empty directory
+
+Create an empty file:  touch file
+songjiaxin@SongJiaxin:~/Code/ECE2800J/Lesson$ ls
+lesson2.cpp
+songjiaxin@SongJiaxin:~/Code/ECE2800J/Lesson$ touch lesson3.cpp
+songjiaxin@SongJiaxin:~/Code/ECE2800J/Lesson$ ls
+lesson2.cpp  lesson3.cpp
+songjiaxin@SongJiaxin:~/Code/ECE2800J/Lesson$
+
+*/
+
+
+/*
+Copy Files/Directories
+cp file1 file2 :  copy the content of file1 into file2
 
 */
