@@ -1,0 +1,83 @@
+{
+    "workbench.colorTheme": "Default High Contrast",
+    "explorer.confirmDelete": false,
+    "editor.accessibilitySupport": "on",
+    "vexcode.Project.Home": "c:\\Users\\86131\\Documents\\vex-vscode-projects",
+    "vexcode.Cpp.Toolchain.Path": "c:\\Users\\86131\\AppData\\Roaming\\Code\\User\\globalStorage\\vexrobotics.vexcode\\tools\\cpp\\toolchain_win32",
+    "vexcode.Cpp.Sdk.Home": "c:\\Users\\86131\\AppData\\Roaming\\Code\\User\\globalStorage\\vexrobotics.vexcode\\sdk\\cpp",
+    "vexcode.Python.Sdk.Home": "c:\\Users\\86131\\AppData\\Roaming\\Code\\User\\globalStorage\\vexrobotics.vexcode\\sdk\\python",
+    "files.autoSave": "afterDelay",
+    "editor.tokenColorCustomizations": {
+        "textMateRules": [
+            {
+                "scope": "vexlog.error",
+                "settings": {
+                    "foreground": "#ff3232"
+                }
+            },
+            {
+                "scope": "vexlog.warning",
+                "settings": {
+                    "foreground": "#FFFF00"
+                }
+            },
+            {
+                "scope": "vexlog.normal",
+                "settings": {
+                    "foreground": "#4479ff"
+                }
+            },
+            {
+                "scope": "vexlog.battery",
+                "settings": {
+                    "foreground": "#4479ff"
+                }
+            },
+            {
+                "scope": "vexlog.power",
+                "settings": {
+                    "foreground": "#00a000"
+                }
+            }
+        ]
+    },
+    "vexrobotics.vexcode.Project.Home": "c:\\Users\\86131\\Documents\\vex-vscode-projects",
+    "vexrobotics.vexcode.Cpp.Toolchain.Path": "c:\\Users\\86131\\AppData\\Roaming\\Code\\User\\globalStorage\\vexrobotics.vexcode\\tools\\cpp\\toolchain_win32",
+    "vexrobotics.vexcode.Cpp.Sdk.Home": "c:\\Users\\86131\\AppData\\Roaming\\Code\\User\\globalStorage\\vexrobotics.vexcode\\sdk\\cpp",
+    "vexrobotics.vexcode.Python.Sdk.Home": "c:\\Users\\86131\\AppData\\Roaming\\Code\\User\\globalStorage\\vexrobotics.vexcode\\sdk\\python",
+    "[python]": {
+        "editor.formatOnType": true
+    },
+    "editor.inlineSuggest.enabled": true,
+    "github.copilot.enable": {
+        "*": true,
+        "plaintext": false,
+        "markdown": false,
+        "scminput": false,
+        "yaml": false,
+        "cpp": true,
+        "java": true,
+        "latex": false
+    },
+    "arduino.useArduinoCli": true,
+    "MATLAB.installPath": "D:\\Matlab",
+    "code-runner.runInTerminal": true,
+    "code-runner.executorMap": {
+        "matlab": "cd $dir && matlab -nosplash -nodesktop -r $fileNameWithoutExt",
+        //  "cpp": "cd $dir && g++ *.cpp -o $fileNameWithoutExt && $dir$fileNameWithoutExt"//original ok, 需要在每个src中加../include
+        //cpp文件inlcude文件夹下的头文件,如何不加../include 就通过
+        //  "cpp": "cd $dir && g++ *.cpp -o $fileNameWithoutExt -I../include && $dir$fileNameWithoutExt"//changed 可以直接在code runner里面不加../Include跑, 不带警告版本
+        "cpp": "cd $dir && g++ *.cpp -Wall -o $fileNameWithoutExt -I../include && $dir$fileNameWithoutExt" //changed 可以直接在code runner里面不加../Include跑
+    },
+    "matlab-interactive-terminal.pythonPath": "C:\\Users\\86131\\AppData\\Local\\Programs\\Python\\Python38\\python.exe",
+    "launch": {
+        "configurations": []
+    },
+    "audioCues.volume": 0,
+    "git.terminalAuthentication": false,
+    "highlightwords.box": {
+        "light": false,
+        "dark": true
+    },
+    "highlightwords.defaultMode": 0,
+}
