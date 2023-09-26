@@ -23,6 +23,7 @@ int main()
     setPixel(image, {0, 2}, {255, 255, 255});
     setPixel(image, {1, 2}, {0, 0, 0});
     setPixel(image, {2, 2}, {128, 128, 128});
-    imageSize(image);
+    printImage(image, true);
+    cout<<"Image Size: "<<imageSize(image)<<endl;
     return 0;
 }

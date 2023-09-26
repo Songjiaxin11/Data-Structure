@@ -30,4 +30,31 @@ int imageSize(Image &image)
     return image._width * image._height;
 }
 
-void printImage(Image &image, bool decOut);
+void printImage(Image &image, bool decOut)
+{
+    if (decOut == false)
+    {
+        for (size_t i = 0; i < image._width; i++)
+        {
+            for (size_t j = 0; j < image._width; j++)
+            {
+                cout << "(" << static_cast<int>(image._pixels[i][j]._red) << "," << static_cast<int>(image._pixels[i][j]._green) << "," << static_cast<int>(image._pixels[i][j]._blue) << ")";
+            }
+            cout << endl;
+        }
+    }
+    if (decOut == true)
+    {
+        for (size_t i = 0; i < image._width; i++)
+        {
+            for (size_t j = 0; j < image._width; j++)
+            {
+                image._pixels[i][j]._red = static_cast<float>(image._pixels[i][j]._red) / 255.0f;
+                image._pixels[i][j]._green = static_cast<float>(image._pixels[i][j]._green) / 255.0f;
+                image._pixels[i][j]._blue = static_cast<float>(image._pixels[i][j]._blue) / 255.0f;
+                cout << "(" << static_cast<int>(image._pixels[i][j]._red) << "," << static_cast<int>(image._pixels[i][j]._green) << "," << static_cast<int>(image._pixels[i][j]._blue) << ")";
+            }
+            cout << endl;
+        }
+    }
+}
