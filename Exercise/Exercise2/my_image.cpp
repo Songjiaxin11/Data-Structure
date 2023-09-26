@@ -6,9 +6,9 @@ void initImage(Image &image, size_t width, size_t height) // image传入image st
 {
     image._width = width;
     image._height = height;
-    for(size_t i=0;i<image._width;i++)
+    for (size_t i = 0; i < image._width; i++)
     {
-        for(size_t j=0;j<image._height;j++)
+        for (size_t j = 0; j < image._height; j++)
         {
             image._pixels[i][j]._red = 0;
             image._pixels[i][j]._green = 0;
@@ -17,4 +17,17 @@ void initImage(Image &image, size_t width, size_t height) // image传入image st
     }
 }
 
+void setPixel(Image &image, Vec2 pos, Pixel pixel)
+{
+    if (pos._x < image._width && pos._y < image._height)
+        image._pixels[pos._x][pos._y] = pixel;
+    else
+        cout << "Error: pixel out of range!" << endl;
+}
 
+int imageSize(Image &image)
+{
+    return image._width * image._height;
+}
+
+void printImage(Image &image, bool decOut);
