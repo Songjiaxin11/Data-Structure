@@ -49,9 +49,9 @@ void printImage(Image &image, bool decOut)
         {
             for (size_t j = 0; j < image._width; j++)
             {
-                float red = static_cast<float>(image._pixels[i][j]._red) / 255.0f;
-                float green = static_cast<float>(image._pixels[i][j]._green) / 255.0f;
-                float blue = static_cast<float>(image._pixels[i][j]._blue) / 255.0f;
+                double red = static_cast<double>(image._pixels[i][j]._red) / 255.0f;
+                double green = static_cast<double>(image._pixels[i][j]._green) / 255.0f;
+                double blue = static_cast<double>(image._pixels[i][j]._blue) / 255.0f;
                 // cout << "(" << static_cast<int>(image._pixels[i][j]._red) << "," << static_cast<int>(image._pixels[i][j]._green) << "," << static_cast<int>(image._pixels[i][j]._blue) << ")";
                 cout << "(" << red << "," << green << "," << blue << ")";
             }
