@@ -20,7 +20,7 @@ void initImage(Image &image, size_t width, size_t height) // image传入image st
 void setPixel(Image &image, Vec2 pos, Pixel pixel)
 {
     if (pos._x < image._width && pos._y < image._height)
-        image._pixels[pos._x][pos._y] = pixel;
+        image._pixels[pos._y][pos._x] = pixel;
     else
         cout << "Error: pixel out of range!" << endl;
 }
@@ -49,10 +49,11 @@ void printImage(Image &image, bool decOut)
         {
             for (size_t j = 0; j < image._width; j++)
             {
-                image._pixels[i][j]._red = static_cast<float>(image._pixels[i][j]._red) / 255.0f;
-                image._pixels[i][j]._green = static_cast<float>(image._pixels[i][j]._green) / 255.0f;
-                image._pixels[i][j]._blue = static_cast<float>(image._pixels[i][j]._blue) / 255.0f;
-                cout << "(" << static_cast<int>(image._pixels[i][j]._red) << "," << static_cast<int>(image._pixels[i][j]._green) << "," << static_cast<int>(image._pixels[i][j]._blue) << ")";
+                float red = static_cast<float>(image._pixels[i][j]._red) / 255.0f;
+                float green = static_cast<float>(image._pixels[i][j]._green) / 255.0f;
+                float blue = static_cast<float>(image._pixels[i][j]._blue) / 255.0f;
+                // cout << "(" << static_cast<int>(image._pixels[i][j]._red) << "," << static_cast<int>(image._pixels[i][j]._green) << "," << static_cast<int>(image._pixels[i][j]._blue) << ")";
+                cout << "(" << red << "," << green << "," << blue << ")";
             }
             cout << endl;
         }
