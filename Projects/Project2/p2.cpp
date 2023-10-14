@@ -116,49 +116,117 @@ list_t filter_even(list_t list)
     }
 }
 
-int main()
+bool odd(int a)
 {
-    int i;
-    list_t listA;
-    list_t listB;
-    list_t listE;
-    listA = list_make();
-    listB = list_make();
-    listE = list_make(); // An empty list
-    for (i = 5; i > 0; i--)
-    {
-        listA = list_make(i, listA);
-        listB = list_make(i + 10, listB);
-    }
-
-    cout << "listA";
-    list_print(listA);
-    cout << endl;
-    cout << "product of A " << product(listA) << endl;
-    cout << "product of E " << product(listE) << endl; // 空的难道是1吗?
-
-    cout << "listB";
-    list_print(listB);
-    cout << endl;
-    cout << "listE";
-    list_print(listE);
-    cout << endl;
-
-    listA = append(reverse(listA), listB);
-    cout << endl;
-    cout << "new listA";
-    list_print(listA);
-    cout << endl;
-    cout << "size_of A: " << size(listA) << endl;
-    cout << "size_of E: " << size(listE) << endl;
-    cout << "sum_of A: " << sum(listA) << endl;
-    cout << "filter_odd of A: ";
-    list_print(filter_odd(listA));
-    cout << endl;
-    cout << "filter_even of A: ";
-    list_print(filter_even(listA));
-    cout << endl;
-    cout << "filter_even of E: ";
-    list_print(filter_even(listE));
-    cout << endl;
+    return a % 2 != 0;
 }
+bool even(int a)
+{
+    return a % 2 == 0;
+}
+
+list_t filter(list_t list, bool (*fn)(int))
+{
+    if (list_isEmpty(list))
+    {
+        return list_make();
+    }
+    else
+    {
+        if (fn(list_first(list)))
+        {
+            return list_make(list_first(list), filter(list_rest(list), fn));
+        }
+        else
+        {
+            return filter(list_rest(list), fn);
+        }
+    }
+}
+
+list_t insert_list(list_t first, list_t second, unsigned int n)
+{
+    if (list_isEmpty(first)) // 第一个条件
+    {
+        return second;
+    }
+    else if (n == 0) // 第二个条件n=0时, 直接把second接在first前面
+    {
+        return append(second, first);
+    }
+    else
+    {
+        return list_make(list_first(first), insert_list(list_rest(first), second, n - 1));
+    }
+}
+
+list_t chop(list_t list, unsigned int n)
+{
+    if (size(list) <= n)
+    {
+        return list_make();
+    }
+    else
+    {
+        return list_make(list_first(list), chop(list_rest(list), n));
+    }
+}
+
+// int main()
+// {
+//     int i;
+//     list_t listA;
+//     list_t listB;
+//     list_t listE;
+//     listA = list_make();
+//     listB = list_make();
+//     listE = list_make(); // An empty list
+//     for (i = 5; i > 0; i--)
+//     {
+//         listA = list_make(i, listA);
+//         listB = list_make(i + 10, listB);
+//     }
+
+//     cout << "listA";
+//     list_print(listA);
+//     cout << endl;
+//     cout << "product of A " << product(listA) << endl;
+//     cout << "product of E " << product(listE) << endl; // 空的难道是1吗?
+
+//     cout << "listB";
+//     list_print(listB);
+//     cout << endl;
+//     cout << "listE";
+//     list_print(listE);
+//     cout << endl;
+
+//     listA = append(reverse(listA), listB);
+//     cout << endl;
+//     cout << "new listA";
+//     list_print(listA);
+//     cout << endl;
+//     cout << "size_of A: " << size(listA) << endl;
+//     cout << "size_of E: " << size(listE) << endl;
+//     cout << "sum_of A: " << sum(listA) << endl;
+//     // cout << "filter_odd of A: ";
+//     // list_print(filter_odd(listA));
+//     // cout << endl;
+//     // cout << "filter_even of A: ";
+//     // list_print(filter_even(listA));
+//     // cout << endl;
+//     // cout << "filter_even of E: ";
+//     // list_print(filter_even(listE));
+//     // cout << endl;
+//     cout << "filter of A odd: ";
+//     list_print(filter(listA, odd));
+//     cout << endl;
+//     cout << "filter of A even: ";
+//     list_print(filter(listA, even));
+//     cout << endl;
+//     cout << "insert_list(listA, listB,3):";
+//     list_print(insert_list(listA, listB, 3));
+//     cout << endl;
+//     cout << "chop(listB,3):";
+//     list_print(chop(listB, 3));
+//     cout << endl;
+// }
