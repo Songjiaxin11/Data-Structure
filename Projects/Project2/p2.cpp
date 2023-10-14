@@ -172,61 +172,184 @@ list_t chop(list_t list, unsigned int n)
     }
 }
 
-// int main()
-// {
-//     int i;
-//     list_t listA;
-//     list_t listB;
-//     list_t listE;
-//     listA = list_make();
-//     listB = list_make();
-//     listE = list_make(); // An empty list
-//     for (i = 5; i > 0; i--)
-//     {
-//         listA = list_make(i, listA);
-//         listB = list_make(i + 10, listB);
-//     }
+// function for tree
+int tree_sum(tree_t tree)
+{
+    if (tree_isEmpty(tree))
+    {
+        return 0;
+    }
+    else
+    {
+        return tree_elt(tree) + tree_sum(tree_left(tree)) + tree_sum(tree_right(tree));
+    }
+}
 
-//     cout << "listA";
-//     list_print(listA);
-//     cout << endl;
-//     cout << "product of A " << product(listA) << endl;
-//     cout << "product of E " << product(listE) << endl; // 空的难道是1吗?
+bool tree_search(tree_t tree, int key)
+{
+    if (tree_isEmpty(tree))
+    {
+        return false;
+    }
+    else
+    {
+        if (tree_elt(tree) == key)
+        {
+            return true;
+        }
+        else
+        {
+            return tree_search(tree_left(tree), key) || tree_search(tree_right(tree), key);
+        }
+    }
+}
 
-//     cout << "listB";
-//     list_print(listB);
-//     cout << endl;
-//     cout << "listE";
-//     list_print(listE);
-//     cout << endl;
+int depth(tree_t tree)
+{
+    if (tree_isEmpty(tree))
+    {
+        return 0;
+    }
+    else
+    {
+        return depth(tree_left(tree)) > depth(tree_right(tree)) ? (depth(tree_left(tree)) + 1) : (depth(tree_right(tree)) + 1);
+    }
+}
 
-//     listA = append(reverse(listA), listB);
-//     cout << endl;
-//     cout << "new listA";
-//     list_print(listA);
-//     cout << endl;
-//     cout << "size_of A: " << size(listA) << endl;
-//     cout << "size_of E: " << size(listE) << endl;
-//     cout << "sum_of A: " << sum(listA) << endl;
-//     // cout << "filter_odd of A: ";
-//     // list_print(filter_odd(listA));
-//     // cout << endl;
-//     // cout << "filter_even of A: ";
-//     // list_print(filter_even(listA));
-//     // cout << endl;
-//     // cout << "filter_even of E: ";
-//     // list_print(filter_even(listE));
-//     // cout << endl;
-//     cout << "filter of A odd: ";
-//     list_print(filter(listA, odd));
-//     cout << endl;
-//     cout << "filter of A even: ";
-//     list_print(filter(listA, even));
-//     cout << endl;
-//     cout << "insert_list(listA, listB,3):";
-//     list_print(insert_list(listA, listB, 3));
-//     cout << endl;
-//     cout << "chop(listB,3):";
-//     list_print(chop(listB, 3));
-//     cout << endl;
-// }
+int tree_min(tree_t tree)
+{
+    if (tree_isEmpty(tree))
+    {
+        return -1;
+    }
+    else
+    {
+        int compare = tree_min(tree_left(tree)) < tree_min(tree_right(tree)) ? tree_min(tree_left(tree)) : tree_min(tree_right(tree));
+        if (compare != -1)
+        {
+            return tree_elt(tree) < compare ? tree_elt(tree) : compare;
+        }
+        else
+        {
+            return tree_elt(tree);
+        }
+    }
+}
+
+list_t traversal(tree_t tree)
+{
+    if (tree_isEmpty(tree))
+    {
+        return list_make();
+    }
+    else
+    {
+        list_t tempt = append(traversal(tree_left(tree)), list_make(tree_elt(tree), list_make()));
+        return append(tempt, traversal(tree_right(tree)));
+    }
+}
+
+bool tree_hasPathSum(tree_t tree, int sum)
+{
+    if (tree_isEmpty(tree))
+    {
+        return false;
+    }
+    else
+    {
+        if (tree_isEmpty(tree_left(tree)) && tree_isEmpty(tree_right(tree)))
+        {
+            return tree_elt(tree) == sum;
+        }
+        else
+        {
+            return tree_hasPathSum(tree_left(tree), sum - tree_elt(tree)) || tree_hasPathSum(tree_right(tree), sum - tree_elt(tree));
+        }
+    }
+}
+
+bool contained_by(tree_t A, tree_t B)
+{
+    
+}
+
+int main()
+{
+    tree_t start = tree_make(9, tree_make(4, tree_make(8, tree_make(), tree_make()), tree_make()), tree_make());
+    tree_t end = tree_make(2, tree_make(1, tree_make(), tree_make()), tree_make(4, tree_make(3, tree_make(), tree_make()), tree_make()));
+    tree_t empty = tree_make();
+    // tree_t candidate = insert_tree(3, start);
+    cout << "tree_start" << endl;
+    tree_print(start);
+    cout << endl;
+    cout << "sum of tree start " << tree_sum(start) << endl;
+    cout << "whether there is 3 in tree start? " << tree_search(start, 3) << endl; // 0 means false
+    cout << "depth of start: " << depth(start) << endl;
+    cout << "min of start: " << tree_min(start) << endl;
+    cout << "traversal of start: ";
+    list_print(traversal(start));
+    cout << endl;
+    cout << "whether there is a path sum of 12 in start? " << tree_hasPathSum(start, 12) << endl;
+    return 0;
+}
+
+/*main for list
+int main()
+{
+    int i;
+    list_t listA;
+    list_t listB;
+    list_t listE;
+    listA = list_make();
+    listB = list_make();
+    listE = list_make(); // An empty list
+    for (i = 5; i > 0; i--)
+    {
+        listA = list_make(i, listA);
+        listB = list_make(i + 10, listB);
+    }
+
+    cout << "listA";
+    list_print(listA);
+    cout << endl;
+    cout << "product of A " << product(listA) << endl;
+    cout << "product of E " << product(listE) << endl; // 空的难道是1吗?
+
+    cout << "listB";
+    list_print(listB);
+    cout << endl;
+    cout << "listE";
+    list_print(listE);
+    cout << endl;
+
+    listA = append(reverse(listA), listB);
+    cout << endl;
+    cout << "new listA";
+    list_print(listA);
+    cout << endl;
+    cout << "size_of A: " << size(listA) << endl;
+    cout << "size_of E: " << size(listE) << endl;
+    cout << "sum_of A: " << sum(listA) << endl;
+    // cout << "filter_odd of A: ";
+    // list_print(filter_odd(listA));
+    // cout << endl;
+    // cout << "filter_even of A: ";
+    // list_print(filter_even(listA));
+    // cout << endl;
+    // cout << "filter_even of E: ";
+    // list_print(filter_even(listE));
+    // cout << endl;
+    cout << "filter of A odd: ";
+    list_print(filter(listA, odd));
+    cout << endl;
+    cout << "filter of A even: ";
+    list_print(filter(listA, even));
+    cout << endl;
+    cout << "insert_list(listA, listB,3):";
+    list_print(insert_list(listA, listB, 3));
+    cout << endl;
+    cout << "chop(listB,3):";
+    list_print(chop(listB, 3));
+    cout << endl;
+}
+*/
