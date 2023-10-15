@@ -162,7 +162,7 @@ list_t insert_list(list_t first, list_t second, unsigned int n)
 
 list_t chop(list_t list, unsigned int n)
 {
-    if (size(list) <= n)
+    if (static_cast<unsigned int>(size(list)) <= n)
     {
         return list_make();
     }
@@ -173,6 +173,8 @@ list_t chop(list_t list, unsigned int n)
 }
 
 // function for tree
+// 最重要的是记住左右子树的遍历都不包括tree_elt, 根节点需要另加条件
+
 int tree_sum(tree_t tree)
 {
     if (tree_isEmpty(tree))
@@ -185,6 +187,17 @@ int tree_sum(tree_t tree)
     }
 }
 
+/**
+ * @brief 结束条件: tree为空
+ * 步骤:
+ * 1. 根节点等于key直接返回
+ * 2. 遍历左子树, 右子树,查找是否有key
+ *
+ * @param tree
+ * @param key
+ * @return true
+ * @return false
+ */
 bool tree_search(tree_t tree, int key)
 {
     if (tree_isEmpty(tree))
@@ -204,6 +217,15 @@ bool tree_search(tree_t tree, int key)
     }
 }
 
+/**
+ * @brief 结束条件: tree空
+ * 步骤:
+ * 1. 递归遍历左子树
+ * 2. 递归遍历右子树
+ * 3. 比较左右子树的深度, 返回较大值
+ * @param tree
+ * @return int
+ */
 int depth(tree_t tree)
 {
     if (tree_isEmpty(tree))
@@ -216,6 +238,17 @@ int depth(tree_t tree)
     }
 }
 
+/**
+ * @brief 结束条件: 遍历完, tree为空, 返回特征值-1
+ * 步骤:
+ * 1. 递归遍历左子树
+ * 2. 递归遍历右子树
+ * 3. 比较左右子树的最小值, 返回最小值
+ * 4. 比较根节点和最小值, 返回最小值
+ * 5. 如果是-1, 说明左右子树都为空, 直接返回根节点
+ * @param tree
+ * @return int
+ */
 int tree_min(tree_t tree)
 {
     if (tree_isEmpty(tree))
@@ -225,18 +258,28 @@ int tree_min(tree_t tree)
     else
     {
         int compare = tree_min(tree_left(tree)) < tree_min(tree_right(tree)) ? tree_min(tree_left(tree)) : tree_min(tree_right(tree));
-        if (compare != -1)
+        if (compare != -1) // 如果不是-1, 说明左右子树至少有一个不为空
         {
             return tree_elt(tree) < compare ? tree_elt(tree) : compare;
         }
         else
         {
-            return tree_elt(tree);
+            return tree_elt(tree); // 如果是-1, 说明左右子树都为空, 直接返回根节点
         }
     }
 }
 
-list_t traversal(tree_t tree)
+/**
+ * @brief 结束条件: 遍历完, tree为空
+ * 步骤:
+ * 1. 递归遍历左子树
+ * 2. 将根节点加入list
+ * 3. 递归遍历右子树
+ *
+ * @param tree
+ * @return list_t
+ */
+list_t traversal(tree_t tree) // 左->根->右
 {
     if (tree_isEmpty(tree))
     {
@@ -249,107 +292,93 @@ list_t traversal(tree_t tree)
     }
 }
 
+/**
+ * @brief 结束条件: 遍历完, tree为空
+ * 步骤:
+ * @return false
+ */
 bool tree_hasPathSum(tree_t tree, int sum)
 {
-    if (tree_isEmpty(tree))
+    if (tree_isEmpty(tree)) // 空树的路径上元素和为0, 递归结束
     {
         return false;
     }
     else
     {
+        int new_sum = sum - tree_elt(tree);
         if (tree_isEmpty(tree_left(tree)) && tree_isEmpty(tree_right(tree)))
         {
-            return tree_elt(tree) == sum;
+            return tree_elt(tree) == sum; // 如果是叶子节点, 判断是否等于new_sum
         }
         else
         {
-            return tree_hasPathSum(tree_left(tree), sum - tree_elt(tree)) || tree_hasPathSum(tree_right(tree), sum - tree_elt(tree));
+            return tree_hasPathSum(tree_left(tree), new_sum) || tree_hasPathSum(tree_right(tree), new_sum);
+        }
+    }
+}
+
+/**
+ * @brief 结束条件: 遍历完
+ * 步骤:
+ * 1. 判断A 是否为空, 如果为空, 返回true
+ * 2. 判断B 是否为空, 如果为空, 返回false
+ * 3. 判断A的根节点是否等于B的根节点
+ * 4. 如果相等, 判断A的左子树是否被B的左子树覆盖, A的右子树是否被B的右子树覆盖
+ * 5. 如果不相等, 判断A是否被B的左子树覆盖, A是否被B的右子树覆盖
+ *
+ *
+ * @param A
+ * @param B
+ * @return true
+ * @return false
+ */
+bool covered_by(tree_t A, tree_t B)
+{
+    if (tree_isEmpty(A))
+    {
+        return true;
+    }
+    else
+    {
+        if (tree_isEmpty(B))
+        {
+            return false;
+        }
+        else
+        {
+            return (tree_elt(A) == tree_elt(B)) && covered_by(tree_left(A), tree_left(B)) && covered_by(tree_right(A), tree_right(B));
         }
     }
 }
 
 bool contained_by(tree_t A, tree_t B)
 {
-    
-}
-
-int main()
-{
-    tree_t start = tree_make(9, tree_make(4, tree_make(8, tree_make(), tree_make()), tree_make()), tree_make());
-    tree_t end = tree_make(2, tree_make(1, tree_make(), tree_make()), tree_make(4, tree_make(3, tree_make(), tree_make()), tree_make()));
-    tree_t empty = tree_make();
-    // tree_t candidate = insert_tree(3, start);
-    cout << "tree_start" << endl;
-    tree_print(start);
-    cout << endl;
-    cout << "sum of tree start " << tree_sum(start) << endl;
-    cout << "whether there is 3 in tree start? " << tree_search(start, 3) << endl; // 0 means false
-    cout << "depth of start: " << depth(start) << endl;
-    cout << "min of start: " << tree_min(start) << endl;
-    cout << "traversal of start: ";
-    list_print(traversal(start));
-    cout << endl;
-    cout << "whether there is a path sum of 12 in start? " << tree_hasPathSum(start, 12) << endl;
-    return 0;
-}
-
-/*main for list
-int main()
-{
-    int i;
-    list_t listA;
-    list_t listB;
-    list_t listE;
-    listA = list_make();
-    listB = list_make();
-    listE = list_make(); // An empty list
-    for (i = 5; i > 0; i--)
+    if (covered_by(A, B))
     {
-        listA = list_make(i, listA);
-        listB = list_make(i + 10, listB);
+        return true;
     }
-
-    cout << "listA";
-    list_print(listA);
-    cout << endl;
-    cout << "product of A " << product(listA) << endl;
-    cout << "product of E " << product(listE) << endl; // 空的难道是1吗?
-
-    cout << "listB";
-    list_print(listB);
-    cout << endl;
-    cout << "listE";
-    list_print(listE);
-    cout << endl;
-
-    listA = append(reverse(listA), listB);
-    cout << endl;
-    cout << "new listA";
-    list_print(listA);
-    cout << endl;
-    cout << "size_of A: " << size(listA) << endl;
-    cout << "size_of E: " << size(listE) << endl;
-    cout << "sum_of A: " << sum(listA) << endl;
-    // cout << "filter_odd of A: ";
-    // list_print(filter_odd(listA));
-    // cout << endl;
-    // cout << "filter_even of A: ";
-    // list_print(filter_even(listA));
-    // cout << endl;
-    // cout << "filter_even of E: ";
-    // list_print(filter_even(listE));
-    // cout << endl;
-    cout << "filter of A odd: ";
-    list_print(filter(listA, odd));
-    cout << endl;
-    cout << "filter of A even: ";
-    list_print(filter(listA, even));
-    cout << endl;
-    cout << "insert_list(listA, listB,3):";
-    list_print(insert_list(listA, listB, 3));
-    cout << endl;
-    cout << "chop(listB,3):";
-    list_print(chop(listB, 3));
-    cout << endl;
+    else
+    {
+        return covered_by(A, B) || contained_by(A, tree_left(B)) || contained_by(A, tree_right(B));
+    }
 }
-*/
+
+tree_t insert_tree(int elt, tree_t tree)
+{
+    if (tree_isEmpty(tree))
+    {
+        return tree_make(elt, tree_make(), tree_make());
+    }
+    else
+    {
+        if (elt < tree_elt(tree))
+        {
+            return tree_make(tree_elt(tree), insert_tree(elt, tree_left(tree)), tree_right(tree));
+        }
+        else
+        {
+            return tree_make(tree_elt(tree), tree_left(tree), insert_tree(elt, tree_right(tree)));
+        }
+    }
+}
+
