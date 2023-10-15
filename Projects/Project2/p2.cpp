@@ -162,7 +162,7 @@ list_t insert_list(list_t first, list_t second, unsigned int n)
 
 list_t chop(list_t list, unsigned int n)
 {
-    if (static_cast<unsigned int>(size(list)) <= n)
+    if ((size(list)) <= static_cast<int>(n))
     {
         return list_make();
     }
@@ -251,14 +251,15 @@ int depth(tree_t tree)
  */
 int tree_min(tree_t tree)
 {
+    int max = 10000;
     if (tree_isEmpty(tree))
     {
-        return -1;
+        return max;
     }
     else
     {
         int compare = tree_min(tree_left(tree)) < tree_min(tree_right(tree)) ? tree_min(tree_left(tree)) : tree_min(tree_right(tree));
-        if (compare != -1) // 如果不是-1, 说明左右子树至少有一个不为空
+        if (compare != max) // 如果不是-1, 说明左右子树至少有一个不为空
         {
             return tree_elt(tree) < compare ? tree_elt(tree) : compare;
         }
@@ -305,13 +306,14 @@ bool tree_hasPathSum(tree_t tree, int sum)
     }
     else
     {
-        int new_sum = sum - tree_elt(tree);
+
         if (tree_isEmpty(tree_left(tree)) && tree_isEmpty(tree_right(tree)))
         {
             return tree_elt(tree) == sum; // 如果是叶子节点, 判断是否等于new_sum
         }
         else
         {
+            int new_sum = sum - tree_elt(tree);
             return tree_hasPathSum(tree_left(tree), new_sum) || tree_hasPathSum(tree_right(tree), new_sum);
         }
     }
@@ -338,16 +340,13 @@ bool covered_by(tree_t A, tree_t B)
     {
         return true;
     }
+    if (tree_isEmpty(B))
+    {
+        return false;
+    }
     else
     {
-        if (tree_isEmpty(B))
-        {
-            return false;
-        }
-        else
-        {
-            return (tree_elt(A) == tree_elt(B)) && covered_by(tree_left(A), tree_left(B)) && covered_by(tree_right(A), tree_right(B));
-        }
+        return (tree_elt(A) == tree_elt(B)) && covered_by(tree_left(A), tree_left(B)) && covered_by(tree_right(A), tree_right(B));
     }
 }
 
@@ -357,9 +356,13 @@ bool contained_by(tree_t A, tree_t B)
     {
         return true;
     }
+    if (tree_isEmpty(A))
+    {
+        return false;
+    }
     else
     {
-        return covered_by(A, B) || contained_by(A, tree_left(B)) || contained_by(A, tree_right(B));
+        return contained_by(A, tree_left(B)) || contained_by(A, tree_right(B));
     }
 }
 
@@ -369,16 +372,12 @@ tree_t insert_tree(int elt, tree_t tree)
     {
         return tree_make(elt, tree_make(), tree_make());
     }
+    if (elt < tree_elt(tree))
+    {
+        return tree_make(tree_elt(tree), insert_tree(elt, tree_left(tree)), tree_right(tree));
+    }
     else
     {
-        if (elt < tree_elt(tree))
-        {
-            return tree_make(tree_elt(tree), insert_tree(elt, tree_left(tree)), tree_right(tree));
-        }
-        else
-        {
-            return tree_make(tree_elt(tree), tree_left(tree), insert_tree(elt, tree_right(tree)));
-        }
+        return tree_make(tree_elt(tree), tree_left(tree), insert_tree(elt, tree_right(tree)));
     }
 }
-
