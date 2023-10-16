@@ -5,32 +5,32 @@
 // }
 
 // int main()
-{
-    tree_t start = tree_make(9, tree_make(4, tree_make(8, tree_make(), tree_make()), tree_make()), tree_make());
-    tree_t end = tree_make(9, tree_make(4, tree_make(8, tree_make(), tree_make()), tree_make()), tree_make(5, tree_make(20, tree_make(), tree_make()), tree_make()));
-    tree_t empty = tree_make();
-    // tree_t candidate = insert_tree(3, start);
-    cout << "tree_start" << endl;
-    tree_print(start);
-    cout << endl;
-    cout << "tree_end" << endl;
-    tree_print(end);
-    cout << endl
-         << endl;
-    cout << "sum of tree start " << tree_sum(start) << endl;
-    cout << "whether there is 21 in tree start? " << tree_search(start, 21) << endl; // 0 means false
-    cout << "depth of start: " << depth(start) << endl;
-    cout << "min of start: " << tree_min(start) << endl;
-    cout << "traversal of start: ";
-    list_print(traversal(start));
-    cout << endl;
-    cout << "whether there is a path sum of 21 in start? " << tree_hasPathSum(start, 21) << endl;
-    cout << "whether start is covered by end? " << covered_by(start, end) << endl;
-    cout << "whether start is contaied by end? " << contained_by(start, end) << endl;
-    cout<<"insert 3 into start"<<endl;
-    tree_print(insert_tree(3, start));
-    return 0;
-}
+// {
+//     tree_t start = tree_make(9, tree_make(4, tree_make(8, tree_make(), tree_make()), tree_make()), tree_make());
+//     tree_t end = tree_make(9, tree_make(4, tree_make(8, tree_make(), tree_make()), tree_make()), tree_make(5, tree_make(20, tree_make(), tree_make()), tree_make()));
+//     tree_t empty = tree_make();
+//     // tree_t candidate = insert_tree(3, start);
+//     cout << "tree_start" << endl;
+//     tree_print(start);
+//     cout << endl;
+//     cout << "tree_end" << endl;
+//     tree_print(end);
+//     cout << endl
+//          << endl;
+//     cout << "sum of tree start " << tree_sum(start) << endl;
+//     cout << "whether there is 21 in tree start? " << tree_search(start, 21) << endl; // 0 means false
+//     cout << "depth of start: " << depth(start) << endl;
+//     cout << "min of start: " << tree_min(start) << endl;
+//     cout << "traversal of start: ";
+//     list_print(traversal(start));
+//     cout << endl;
+//     cout << "whether there is a path sum of 21 in start? " << tree_hasPathSum(start, 21) << endl;
+//     cout << "whether start is covered by end? " << covered_by(start, end) << endl;
+//     cout << "whether start is contaied by end? " << contained_by(start, end) << endl;
+//     cout<<"insert 3 into start"<<endl;
+//     tree_print(insert_tree(3, start));
+//     return 0;
+// }
 /*main for list
 int main()
 {

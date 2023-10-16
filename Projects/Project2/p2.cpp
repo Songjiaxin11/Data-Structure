@@ -358,6 +358,10 @@ bool contained_by(tree_t A, tree_t B)
     }
     if (tree_isEmpty(A))
     {
+        return true;
+    }
+    if(tree_isEmpty(B))
+    {
         return false;
     }
     else
@@ -381,3 +385,41 @@ tree_t insert_tree(int elt, tree_t tree)
         return tree_make(tree_elt(tree), tree_left(tree), insert_tree(elt, tree_right(tree)));
     }
 }
+
+// int main()
+// {
+//     // tree_t start = tree_make(9, tree_make(4, tree_make(8, tree_make(), tree_make()), tree_make()), tree_make());//case1
+//     tree_t start = tree_make(30, tree_make(25, tree_make(), tree_make(35, tree_make(), tree_make())), tree_make());//case2
+
+//     tree_t end = tree_make(9, tree_make(4, tree_make(8, tree_make(), tree_make()), tree_make()), tree_make(5, tree_make(20, tree_make(), tree_make()), tree_make()));
+//     tree_t empty = tree_make();
+//     // tree_t candidate = insert_tree(3, start);
+//     cout << "tree_start" << endl;
+//     tree_print(start);
+//     cout << endl;
+//     cout << "tree_end" << endl;
+//     tree_print(end);
+//     cout << endl
+//          << endl;
+//     cout << "sum of tree start " << tree_sum(start) << endl;
+//     cout << "whether there is 21 in tree start? " << tree_search(start, 21) << endl; // 0 means false
+//     cout << "depth of start: " << depth(start) << endl;
+//     cout << "min of start: " << tree_min(start) << endl;
+//     cout << "traversal of start: ";
+//     list_print(traversal(start));
+//     cout << endl;
+//     cout << "traversal of end: ";
+//     list_print(traversal(end));
+//     cout << endl;
+//     cout << "whether there is a path sum of 21 in start? " << tree_hasPathSum(start, 21) << endl;
+//     cout << "whether start is covered by end? " << covered_by(start, end) << endl;
+//     cout << "whether start is contaied by end? " << contained_by(start, end) << endl;
+//     cout << "insert 5 into end" << endl;
+//     tree_t new_end = insert_tree(5, end);
+//     cout << "traversal of new end: ";
+//     tree_print(new_end);
+    
+//     list_print(traversal(new_end));
+//     cout << endl;
+//     return 0;
+// }
