@@ -1,6 +1,8 @@
 #include <iostream>
 #include <cstdlib> // for atoi
 #include <iomanip>
+#include <fstream>
+#include <sstream>
 using namespace std;
 // int main(int argc, char *argv[])
 // {
@@ -39,17 +41,57 @@ using namespace std;
 //         }
 //         cerr<<endl;
 //     }
-    
+
 //     return 0;
 // }
+// int main()
+// {
+//     int foo;
+//     double bar;
+//     string baz;
+//     cin>>foo>>bar>>baz;
+//     cout<<foo<<endl;
+//     // cout<<bar<<endl;
+//     // cout<<baz<<endl;
+//     return 0;
+// }
+ifstream iFile;
+ofstream oFile;
 int main()
 {
+    iFile.open("input.txt");
+    oFile.open("output.txt");
+    // int bar;
+    // iFile >> bar;
+    // oFile << bar << endl;
+    // string baz;
+    // while (getline(iFile, baz))
+    // {
+    //     oFile << baz << endl;
+    // }
+    // while(iFile)
+    // {
+    //     getline(iFile, baz);
+    //     if(iFile)
+    //     {
+    //     oFile << baz << endl;
+    //     cout<<baz<<endl;
+    //     }
+    // }
+    // cout << "The output answer is " << bar << baz << endl;
+    // iFile.close();
+    // oFile.close();
+    istringstream iStream;
+    ostringstream oStream;
     int foo;
     double bar;
+    char a;
     string baz;
-    cin>>foo>>bar>>baz;
-    cout<<foo<<endl;
-    // cout<<bar<<endl;
-    // cout<<baz<<endl;
+    iStream.str("42 3.14 m this");
+    iStream >> foo >> bar>>a>>baz;
+    oStream << foo << " " << bar<<" "<<a<<" "<<baz<<endl;
+    string result;
+    result = oStream.str();
+    cout<<result;
     return 0;
 }

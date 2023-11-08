@@ -71,7 +71,7 @@ RecursionResult fibonacci(int n, int acc, int _)
 }
 int main()
 {
-    int result = recurse(factorial, 5, 1, 0);   
+    int result = recurse(factorial, 5, 3, 0);   
     cout<<result<<endl;
     return 0;
 }

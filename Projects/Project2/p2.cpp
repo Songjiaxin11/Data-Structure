@@ -47,7 +47,6 @@ list_t reverse(list_t list)
     }
     else
     {
-        // Reverse the rest of the list and append the first element at the end
         list_t list_back = list_make(list_first(list), list_make()); // 在每次添加元素后加一个新位置
         list_t list_front = reverse(list_rest(list));
         return append(list_front, list_back);
@@ -288,8 +287,8 @@ list_t traversal(tree_t tree) // 左->根->右
     }
     else
     {
-        list_t tempt = append(traversal(tree_left(tree)), list_make(tree_elt(tree), list_make()));
-        return append(tempt, traversal(tree_right(tree)));
+        list_t tempt = append(traversal(tree_left(tree)), list_make(tree_elt(tree), list_make())); // 先遍历左子树, 把根节点加入list
+        return append(tempt, traversal(tree_right(tree)));                                         // 再遍历右子树
     }
 }
 
@@ -309,7 +308,7 @@ bool tree_hasPathSum(tree_t tree, int sum)
 
         if (tree_isEmpty(tree_left(tree)) && tree_isEmpty(tree_right(tree)))
         {
-            return tree_elt(tree) == sum; // 如果是叶子节点, 判断是否等于new_sum
+            return tree_elt(tree) == sum; // 如果是叶子节点, 判断是否等于sum
         }
         else
         {
@@ -360,7 +359,7 @@ bool contained_by(tree_t A, tree_t B)
     {
         return true;
     }
-    if(tree_isEmpty(B))
+    if (tree_isEmpty(B))
     {
         return false;
     }
@@ -386,40 +385,190 @@ tree_t insert_tree(int elt, tree_t tree)
     }
 }
 
-// int main()
-// {
-//     // tree_t start = tree_make(9, tree_make(4, tree_make(8, tree_make(), tree_make()), tree_make()), tree_make());//case1
-//     tree_t start = tree_make(30, tree_make(25, tree_make(), tree_make(35, tree_make(), tree_make())), tree_make());//case2
+int main()
+{
+    tree_t start = tree_make(9, tree_make(4, tree_make(8, tree_make(), tree_make()), tree_make()), tree_make());//case1
+    // tree_t start = tree_make(30, tree_make(25, tree_make(), tree_make(35, tree_make(), tree_make())), tree_make());//case2
+    // tree_t start = tree_make(
+    //     19,
+    //     tree_make(17,
+    //               tree_make(15,
+    //                         tree_make(13,
+    //                                   tree_make(11,
+    //                                             tree_make(9,
+    //                                                       tree_make(7,
+    //                                                                 tree_make(5,
+    //                                                                           tree_make(3,
+    //                                                                                     tree_make(),
+    //                                                                                     tree_make()),
+    //                                                                           tree_make(6,
+    //                                                                                     tree_make(),
+    //                                                                                     tree_make())),
+    //                                                                 tree_make(8,
+    //                                                                           tree_make(),
+    //                                                                           tree_make())),
+    //                                                       tree_make(10,
+    //                                                                 tree_make(),
+    //                                                                 tree_make())),
+    //                                             tree_make()),
+    //                                   tree_make()),
+    //                         tree_make()),
+    //               tree_make(20,
+    //                         tree_make(),
+    //                         tree_make())),
+    //     tree_make(17,
+    //               tree_make(15,
+    //                         tree_make(13,
+    //                                   tree_make(11,
+    //                                             tree_make(9,
+    //                                                       tree_make(7,
+    //                                                                 tree_make(5,
+    //                                                                           tree_make(3,
+    //                                                                                     tree_make(),
+    //                                                                                     tree_make()),
+    //                                                                           tree_make(6,
+    //                                                                                     tree_make(),
+    //                                                                                     tree_make())),
+    //                                                                 tree_make(8,
+    //                                                                           tree_make(),
+    //                                                                           tree_make())),
+    //                                                       tree_make(10,
+    //                                                                 tree_make(),
+    //                                                                 tree_make())),
+    //                                             tree_make()),
+    //                                   tree_make()),
+    //                         tree_make()),
+    //               tree_make(20,
+    //                         tree_make(),
+    //                         tree_make())));//case3
+    //     tree_t start = tree_make(
+    //     1,
+    //     tree_make(2,
+    //         tree_make(3,
+    //             tree_make(4,
+    //                 tree_make(5,
+    //                     tree_make(),
+    //                     tree_make()
+    //                 ),
+    //                 tree_make(6,
+    //                     tree_make(),
+    //                     tree_make()
+    //                 )
+    //             ),
+    //             tree_make(7,
+    //                 tree_make(8,
+    //                     tree_make(),
+    //                     tree_make()
+    //                 ),
+    //                 tree_make(9,
+    //                     tree_make(),
+    //                     tree_make()
+    //                 )
+    //             )
+    //         ),
+    //         tree_make(10,
+    //             tree_make(11,
+    //                 tree_make(12,
+    //                     tree_make(),
+    //                     tree_make()
+    //                 ),
+    //                 tree_make(13,
+    //                     tree_make(),
+    //                     tree_make()
+    //                 )
+    //             ),
+    //             tree_make(14,
+    //                 tree_make(15,
+    //                     tree_make(),
+    //                     tree_make()
+    //                 ),
+    //                 tree_make(16,
+    //                     tree_make(),
+    //                     tree_make()
+    //                 )
+    //             )
+    //         )
+    //     ),
+    //     tree_make(17,
+    //         tree_make(18,
+    //             tree_make(19,
+    //                 tree_make(20,
+    //                     tree_make(),
+    //                     tree_make()
+    //                 ),
+    //                 tree_make(21,
+    //                     tree_make(),
+    //                     tree_make()
+    //                 )
+    //             ),
+    //             tree_make(22,
+    //                 tree_make(23,
+    //                     tree_make(),
+    //                     tree_make()
+    //                 ),
+    //                 tree_make(24,
+    //                     tree_make(),
+    //                     tree_make()
+    //                 )
+    //             )
+    //         ),
+    //         tree_make(25,
+    //             tree_make(26,
+    //                 tree_make(27,
+    //                     tree_make(),
+    //                     tree_make()
+    //                 ),
+    //                 tree_make(28,
+    //                     tree_make(),
+    //                     tree_make()
+    //                 )
+    //             ),
+    //             tree_make(29,
+    //                 tree_make(30,
+    //                     tree_make(),
+    //                     tree_make()
+    //                 ),
+    //                 tree_make(31,
+    //                     tree_make(),
+    //                     tree_make()
+    //                 )
+    //             )
+    //         )
+    //     )
+    // );
 
-//     tree_t end = tree_make(9, tree_make(4, tree_make(8, tree_make(), tree_make()), tree_make()), tree_make(5, tree_make(20, tree_make(), tree_make()), tree_make()));
-//     tree_t empty = tree_make();
-//     // tree_t candidate = insert_tree(3, start);
-//     cout << "tree_start" << endl;
-//     tree_print(start);
-//     cout << endl;
-//     cout << "tree_end" << endl;
-//     tree_print(end);
-//     cout << endl
-//          << endl;
-//     cout << "sum of tree start " << tree_sum(start) << endl;
-//     cout << "whether there is 21 in tree start? " << tree_search(start, 21) << endl; // 0 means false
-//     cout << "depth of start: " << depth(start) << endl;
-//     cout << "min of start: " << tree_min(start) << endl;
-//     cout << "traversal of start: ";
-//     list_print(traversal(start));
-//     cout << endl;
-//     cout << "traversal of end: ";
-//     list_print(traversal(end));
-//     cout << endl;
-//     cout << "whether there is a path sum of 21 in start? " << tree_hasPathSum(start, 21) << endl;
-//     cout << "whether start is covered by end? " << covered_by(start, end) << endl;
-//     cout << "whether start is contaied by end? " << contained_by(start, end) << endl;
-//     cout << "insert 5 into end" << endl;
-//     tree_t new_end = insert_tree(5, end);
-//     cout << "traversal of new end: ";
-//     tree_print(new_end);
-    
-//     list_print(traversal(new_end));
-//     cout << endl;
-//     return 0;
-// }
+    tree_t end = tree_make(9, tree_make(4, tree_make(8, tree_make(), tree_make()), tree_make()), tree_make());
+    int minend = tree_min(end);
+    cout << tree_isEmpty(tree_right(end)) << endl;
+    cout << "minend" << minend << endl;
+    tree_t empty = tree_make();
+    // tree_t candidate = insert_tree(3, start);
+    cout << "tree_start" << endl;
+    // tree_print(start);
+    cout << endl;
+    cout << "tree_end" << endl;
+    tree_print(end);
+    cout << endl
+         << endl;
+    // cout << "sum of tree start " << tree_sum(start) << endl;
+    // cout << "whether there is 21 in tree start? " << tree_search(start, 21) << endl; // 0 means false
+    // cout << "depth of start: " << depth(start) << endl;
+    // cout << "min of start: " << tree_min(start) << endl;
+    cout << "traversal of start: ";
+    // list_print(traversal(start));
+    cout << endl;
+    cout << "traversal of end: ";
+    list_print(traversal(end));
+    cout << endl;
+    // cout << "whether there is a path sum of 21 in start? " << tree_hasPathSum(start, 21) << endl;
+    // cout << "whether start is covered by end? " << covered_by(start, end) << endl;
+    // cout << "whether start is contaied by end? " << contained_by(start, end) << endl;
+    cout << "insert 5 into end" << endl;
+    tree_t new_end = insert_tree(5, end);
+    cout << "traversal of new end: ";
+    tree_print(new_end);
+
+    list_print(traversal(new_end));
+    cout << endl;
+    return 0;
+}
