@@ -14,6 +14,7 @@ bool initWorld(world_t &world, const string &speciesFile,
     // types to be used
     string line;
     int i = 0;
+    int i1 = 0;
     int j = 0;
     int k = 0;
     int row = 0;
@@ -22,7 +23,9 @@ bool initWorld(world_t &world, const string &speciesFile,
     int width = 0;
     string Species_Name[MAXSPECIES];
     string Species_Instruction[MAXPROGRAM];
+    string Creature_Properties[MAXCREATURES];
     world.species[i].program[j].address = 0;
+    creature_t *squares[MAXHEIGHT][MAXWIDTH] = {NULL};
     // 读取species文件的第一行,存储到dir_Name中
     ifstream inputFile(speciesFile);
     if (!inputFile)
@@ -126,23 +129,90 @@ bool initWorld(world_t &world, const string &speciesFile,
     }
     // 读creature
     // 读grid
-    ifstream inputFile2(creaturesFile);
-    if (!inputFile2)
+    ifstream inFileSmallCreature(creaturesFile);
+    if (!inFileSmallCreature)
     {
         cout << "Error: Cannot open file " << creaturesFile << "!" << endl;
         return false;
     }
-    getline(inputFile2, line);
-    stringstream s2(line);
+    getline(inFileSmallCreature, line);
+    stringstream s2(line); // s2读取每个worldfile的height和width
     s2 >> height;
     world.grid.height = height;
-    
-    getline(inputFile2, line);
+    getline(inFileSmallCreature, line);
     s2.clear();
     s2.str(line);
-    s2>>width;
+    s2 >> width;
     world.grid.width = width;
-    // cout<<world.numSpecies<<endl;
+
+    // 读species_t *species
+    // 逐行读取至当前string[i]
+    // 第一个空格之前是*species, 第二个空格之前是方向, 第三个空格之前是坐标
+    while (getline(inFileSmallCreature, line))
+    {
+        if (line == "")
+        {
+            break;
+        }
+        Creature_Properties[i1] = line; // i1要记得++和归零
+        world.numCreatures++;
+        stringstream s3(line); // s3读取每个creature的一整行property
+        string species_part;
+        string direction_part;
+        s3 >> species_part >> direction_part >> row >> col;
+        // 存到world.creatures[i1].location的r和c
+        world.creatures[i1].location.r = row;
+        world.creatures[i1].location.c = col;
+        // 存到world.creatures[i1].direction
+        if (direction_part == "east")
+        {
+            world.creatures[i1].direction = EAST;
+        }
+        else if (direction_part == "south")
+        {
+            world.creatures[i1].direction = SOUTH;
+        }
+        else if (direction_part == "west")
+        {
+            world.creatures[i1].direction = WEST;
+        }
+        else if (direction_part == "north")
+        {
+            world.creatures[i1].direction = NORTH;
+        }
+        else
+        {
+            cout << "Error: Direction " << direction_part << "is not recognized!" << endl;
+            exit(0);
+        }
+        // 读取creature对应的*species
+        for (int j1 = 0; j1 < world.numSpecies; j1++)
+        {
+            if (species_part == world.species[j1].name)
+            {
+                world.creatures[i1].species = &world.species[j1];
+                cout << "-------------------------------NAME: " << world.creatures[i1].species->name << "-----------------------" << endl;
+                break;
+            }
+        }
+
+        // 读取grid_t中的creature_t *squares[MAXHEIGHT][MAXWIDTH];
+        for (int j2 = 0; j2 < world.numCreatures; j2++)
+        {
+            int r = world.creatures[j2].location.r;
+            int c = world.creatures[j2].location.c;
+            squares[r][c] = &world.creatures[j2];
+
+            cout << "-------You are here" << squares[r][c]->species->name << "------" << endl;
+        }
+
+        // 初始化programID应该是错的
+        world.creatures[i1].programID = 1;
+
+        i1++; // 下一个creature
+    }
+    i1 = 0;
+
     return true;
 }
 int main(int argc, char *argv[])
@@ -155,6 +225,7 @@ int main(int argc, char *argv[])
     species_t species;
     instruction_t instruction;
     grid_t grid;
+    point_t point;
 
     // error checking started
     // error 1
