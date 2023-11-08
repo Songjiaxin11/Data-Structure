@@ -11,7 +11,7 @@ using namespace std;
 bool initWorld(world_t &world, const string &speciesFile,
                const string &creaturesFile)
 {
-    //types to be used
+    // types to be used
     string line;
     int i = 0;
     int j = 0;
@@ -21,7 +21,7 @@ bool initWorld(world_t &world, const string &speciesFile,
     ifstream inputFile(speciesFile);
     if (!inputFile)
     {
-        cout << "Error: Cannot open file " << speciesFile<<"!" << endl;
+        cout << "Error: Cannot open file " << speciesFile << "!" << endl;
         return false;
     }
     getline(inputFile, line);
@@ -34,8 +34,8 @@ bool initWorld(world_t &world, const string &speciesFile,
         Species_Name[i] = line;
         world.numSpecies++;
         world.species[i].name = Species_Name[i];
-        
-        cout<<Species_Name[i]<<endl;
+
+        cout << Species_Name[i] << endl;
         // 打开speciesName对应的同名文件
         ifstream inFileCreature(dir_Name + '/' + Species_Name[i]);
         if (!inputFile)
@@ -47,8 +47,8 @@ bool initWorld(world_t &world, const string &speciesFile,
 
         // 读取名为dir_Name/species_Name[]文件的每一行, 存储到每个species中的instruction_t program中
         // string line;
-        //当读到空行时停止
-    
+        // 当读到空行时停止
+
         while (getline(inFileCreature, line))
         {
             if (line == "")
@@ -58,14 +58,20 @@ bool initWorld(world_t &world, const string &speciesFile,
             Species_Instruction[j] = line;
             world.species[i].programSize++;
 
-           
-// species.program[j-1] = Species_Instruction[j-1];//然后还要拆分出来
+            // species.program[j-1] = Species_Instruction[j-1];//然后还要拆分出来
+            // 把Species_Instruction[j]中的前半部分存到world.species.program.op中, 后面的integer存到world.species.program.address中
+            stringstream ss(line); // 将读取的字符串转换为 stringstream
+            string str_part;
+            int int_part;
+            ss >> str_part >> int_part; // 从 stringstream 中分离字符串和整数
+            world.species[i].program[j].address = int_part;
+
             cout << Species_Instruction[j] << endl;
             j++;
         }
-        j=0;
-        cout<<endl;
-        i++;//下一个species
+        j = 0;
+        cout << endl;
+        i++; // 下一个species
     }
     // cout<<world.numSpecies<<endl;
     return true;
@@ -106,11 +112,11 @@ int main(int argc, char *argv[])
     // {
     //     cout << "Error: Cannot open file " << argv[2] << endl;
     // }
-    
-    bool readFile = initWorld(world, argv[1],
-              argv[2]);
-    cout<<"!!!!!!"<<endl;
-        // inputFile.close();
 
-        return 0;
+    bool readFile = initWorld(world, argv[1],
+                              argv[2]);
+    cout << "!!!!!!" << endl;
+    // inputFile.close();
+
+    return 0;
 }
