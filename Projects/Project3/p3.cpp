@@ -15,8 +15,14 @@ bool initWorld(world_t &world, const string &speciesFile,
     string line;
     int i = 0;
     int j = 0;
+    int k = 0;
+    int row = 0;
+    int col = 0;
+    int height = 0;
+    int width = 0;
     string Species_Name[MAXSPECIES];
     string Species_Instruction[MAXPROGRAM];
+    world.species[i].program[j].address = 0;
     // 读取species文件的第一行,存储到dir_Name中
     ifstream inputFile(speciesFile);
     if (!inputFile)
@@ -65,14 +71,77 @@ bool initWorld(world_t &world, const string &speciesFile,
             int int_part;
             ss >> str_part >> int_part; // 从 stringstream 中分离字符串和整数
             world.species[i].program[j].address = int_part;
+            // 将str_part和enum进行比较,
+            //  将str_part和enum进行比较
 
+            if (str_part == "hop")
+            {
+                world.species[i].program[k].op = HOP;
+            }
+            else if (str_part == "left")
+            {
+                world.species[i].program[k].op = LEFT;
+            }
+            else if (str_part == "right")
+            {
+                world.species[i].program[k].op = RIGHT;
+            }
+            else if (str_part == "infect")
+            {
+                world.species[i].program[k].op = INFECT;
+            }
+            else if (str_part == "ifempty")
+            {
+                world.species[i].program[k].op = IFEMPTY;
+            }
+            else if (str_part == "ifenemy")
+            {
+                world.species[i].program[k].op = IFENEMY;
+            }
+            else if (str_part == "ifsame")
+            {
+                world.species[i].program[k].op = IFSAME;
+            }
+            else if (str_part == "ifwall")
+            {
+                world.species[i].program[k].op = IFWALL;
+            }
+            else if (str_part == "go")
+            {
+                world.species[i].program[k].op = GO;
+            }
+            else
+            {
+                cout << "Error: Instruction " << str_part << " is not recognized!" << endl;
+                exit(0);
+            }
+            k++; //
             cout << Species_Instruction[j] << endl;
-            j++;
+            j++; // world.species[i].program[j]
         }
         j = 0;
+        k = 0; // world.species[i].program[j].op
         cout << endl;
         i++; // 下一个species
     }
+    // 读creature
+    // 读grid
+    ifstream inputFile2(creaturesFile);
+    if (!inputFile2)
+    {
+        cout << "Error: Cannot open file " << creaturesFile << "!" << endl;
+        return false;
+    }
+    getline(inputFile2, line);
+    stringstream s2(line);
+    s2 >> height;
+    world.grid.height = height;
+    
+    getline(inputFile2, line);
+    s2.clear();
+    s2.str(line);
+    s2>>width;
+    world.grid.width = width;
     // cout<<world.numSpecies<<endl;
     return true;
 }
@@ -85,6 +154,7 @@ int main(int argc, char *argv[])
     world_t world;
     species_t species;
     instruction_t instruction;
+    grid_t grid;
 
     // error checking started
     // error 1
