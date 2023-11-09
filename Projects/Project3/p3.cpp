@@ -8,10 +8,174 @@
 #include "simulation.h"
 using namespace std;
 
+point_t adjacentPoint(point_t pt, direction_t dir)
+{
+    if (dir==EAST)
+    {
+        pt.c++;
+    }
+    else if (dir==WEST)
+    {
+        pt.c--;
+    }
+    else if (dir==NORTH)
+    {
+        pt.r--;
+    }
+    else if (dir==SOUTH)
+    {
+        pt.r++;
+    }
+    return pt;
+}
+bool inside_bound(world_t &world, point_t pt, direction_t dir);
+/**
+ * @brief 检查前方是否会超出边界与前方是否有其他creature
+ * 若在下一步在边界内或者没有其他creature, 返回true
+ *
+ * @param world
+ * @param pt
+ * @param dir
+ * @return true
+ * @return false
+ */
+bool is_Empty(world_t &world, point_t pt, direction_t dir)
+{
+    point_t check_point = adjacentPoint(pt, dir); // 指向下一个位置
+    if (inside_bound(world, pt, dir))
+    {
+        if (world.grid.squares[check_point.r][check_point.c] == NULL)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+    else
+    {
+        return false;
+    }
+}
+/**
+ * @brief 判断是否在边界内 如果是, 则返回true
+ *
+ * @param world
+ * @param pt
+ * @param dir
+ * @return true
+ * @return false
+ */
+bool inside_bound(world_t &world, point_t pt, direction_t dir)
+{
+    point_t check_point = adjacentPoint(pt, dir);
+    if (check_point.r < world.grid.height && check_point.c < world.grid.width)
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
+bool Enemy_Warning(world_t &world, point_t pt, direction_t dir)
+{
+    point_t check_point = adjacentPoint(pt, dir);
+    if (is_Empty(world, pt, dir) == false)
+    {
+        // 前方有东西, 且下一步的creature和当前不同
+        if (world.grid.squares[check_point.r][check_point.c] != world.grid.squares[pt.r][pt.c])
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+    else
+    {
+        return false;
+    }
+}
+
+// 和上一个只有一个等号不一样
+bool Friend_In_Front(world_t &world, point_t pt, direction_t dir)
+{
+    point_t check_point = adjacentPoint(pt, dir);
+    if (is_Empty(world, pt, dir) == false)
+    {
+        // 前方有东西, 且下一步的creature和当前相同
+        if (world.grid.squares[check_point.r][check_point.c] == world.grid.squares[pt.r][pt.c])
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+    else
+    {
+        return false;
+    }
+}
+
+/**
+ * @brief 运行instruction的第n步
+ *
+ * @param creature
+ * @param n
+ */
+void go_To_Step(world_t &world, int n)
+{
+    world.creatures->programID += n;
+}
+
+// instructiond 顺序移动至下一步
+void programID_Plus_Plus(world_t &world)
+{
+    world.creatures->programID++;
+}
+
+void print_Grid(world_t &world)
+{
+    for (int r = 0; r < world.grid.height; r++)
+    {
+        for (int c = 0; c < world.grid.width; c++)
+        {
+            cout << "____"
+                 << " ";
+        }
+        cout << endl;
+    }
+}
+
+creature_t *getCreature(const world_t &world, point_t &location)
+// // REQUIRES: location is inside the grid.
+// //
+// // EFFECTS: Returns a pointer to the creature at "location" in "grid".
+{
+    if (world.grid.squares[location.r][location.c] == NULL)
+    {
+        return NULL;
+    }
+    else
+    {
+        // cout << "name" << world.grid.squares[location.r][location.c]->species->name << endl;
+        // cout << world.grid.squares[location.r][location.c]->location.r << endl;
+        return world.grid.squares[location.r][location.c];
+    }
+}
+
 bool initWorld(world_t &world, const string &speciesFile,
                const string &creaturesFile)
 {
     // types to be used
+    // 在initWorld函数内部
+
     string line;
     int i = 0;
     int i1 = 0;
@@ -25,7 +189,7 @@ bool initWorld(world_t &world, const string &speciesFile,
     string Species_Instruction[MAXPROGRAM];
     string Creature_Properties[MAXCREATURES];
     world.species[i].program[j].address = 0;
-    creature_t *squares[MAXHEIGHT][MAXWIDTH] = {NULL};
+
     // 读取species文件的第一行,存储到dir_Name中
     ifstream inputFile(speciesFile);
     if (!inputFile)
@@ -195,26 +359,37 @@ bool initWorld(world_t &world, const string &speciesFile,
                 break;
             }
         }
-
+        // 把所有grid中的*squares[][]设置为NULL
+        for (unsigned int r = 0; r < world.grid.height; r++)
+        {
+            for (unsigned int c = 0; c < world.grid.width; c++)
+            {
+                world.grid.squares[r][c] = NULL;
+            }
+        }
         // 读取grid_t中的creature_t *squares[MAXHEIGHT][MAXWIDTH];
         for (int j2 = 0; j2 < world.numCreatures; j2++)
         {
             int r = world.creatures[j2].location.r;
             int c = world.creatures[j2].location.c;
-            squares[r][c] = &world.creatures[j2];
-
-            cout << "-------You are here" << squares[r][c]->species->name << "------" << endl;
+            world.grid.squares[r][c] = &world.creatures[j2];
+            cout << "-------You are here " << world.grid.squares[r][c]->species->name << "------" << endl;
         }
 
         // 初始化programID应该是错的
-        world.creatures[i1].programID = 1;
+        world.creatures[i1].programID = 0;
 
         i1++; // 下一个creature
     }
     i1 = 0;
-
     return true;
 }
+
+instruction_t getInstruction(const creature_t &creature)
+{
+    return creature.species->program[creature.programID];
+}
+
 int main(int argc, char *argv[])
 {
     int i = 0;
@@ -226,6 +401,8 @@ int main(int argc, char *argv[])
     instruction_t instruction;
     grid_t grid;
     point_t point;
+    creature_t creatures[MAXCREATURES];
+    creature_t creature;
 
     // error checking started
     // error 1
@@ -256,8 +433,44 @@ int main(int argc, char *argv[])
 
     bool readFile = initWorld(world, argv[1],
                               argv[2]);
+
     cout << "!!!!!!" << endl;
     // inputFile.close();
+    /*
+    // test for instruction
+    for (int i = 0; i < world.numCreatures; i++)
+    {
+        creature = world.creatures[i];
+        cout << creature.species->name << " : ";
+        instruction = getInstruction(creature);
+        cout << instruction.op << " " << instruction.address << endl;
+        cout<<"ProgramID: "<<creature.programID<<endl;
+    }
+    */
+    /* test for getCreature
+    // 提取每个grid中的creature
+    for (int i = 0; i < world.numCreatures; i++)
+    {
+        for (int r = 0; r < world.grid.height; r++)
+        {
+            for (int c = 0; c < world.grid.width; c++)
+            {
+                creature_t *creature = getCreature(world, world.creatures[i].location);
+                if (creature != NULL)
+                {
+                    cout << "name: " << creature->species->name << "  ";
+                    cout << "location: "
+                         << "[" << creature->location.r << "," << creature->location.c << "]" << endl;
+                }
+                else
+                {
+                    cout << "There's no creature on this grid" << endl;
+                }
+            }
+        }
+    }
+    */
+   print_Grid(world);
 
     return 0;
 }

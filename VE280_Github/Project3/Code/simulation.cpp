@@ -36,7 +36,7 @@ instruction_t getInstruction(const creature_t &creature) {
     return creature.species->program[creature.programID-1];
 }
 
-
+/*
 void getinstruct(species_t &a, string s, int &kk, int &istoinstruction) {
     if (s == "hop") {
         kk++;
@@ -73,11 +73,12 @@ void getinstruct(species_t &a, string s, int &kk, int &istoinstruction) {
     }
     a.program[kk].address=0; // to initialize the address, we note it as 0
 }
+*/
 
 void instruct_to(species_t &a, unsigned int b, const int kk) {
     a.program[kk].address = b;
 }
-
+/*
 void getWorld(world_t &aWorld, string Dir_wrld) {
     ifstream iFile2;
     stringstream iString2;
@@ -238,6 +239,7 @@ void getWorld(world_t &aWorld, string Dir_wrld) {
     iFile2.clear();
     iFile2.close();
 }
+*/
 
 void World_simulation(world_t &aWorld, int Round){
 
