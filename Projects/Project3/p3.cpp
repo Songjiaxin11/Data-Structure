@@ -49,8 +49,9 @@ void print_Operation(opcode_t &op)
         cout << "go ";
     }
 }
-void simulation(world_t &world, int round);
+void simulation(world_t &world, int round, int step);
 void hop(world_t &world, point_t pt, direction_t dir);
+void left(world_t &world, point_t pt, direction_t dir);
 
 point_t adjacentPoint(point_t pt, direction_t dir)
 {
@@ -175,7 +176,7 @@ bool Friend_In_Front(world_t &world, point_t pt, direction_t dir)
  */
 void go_To_Step(world_t &world, int n)
 {
-    world.creatures->programID += n;
+    world.creatures->programID = n+1;
 }
 
 // instructiond 顺序移动至下一步
@@ -513,7 +514,7 @@ int main(int argc, char *argv[])
     point_t point;
     creature_t creatures[MAXCREATURES];
     creature_t creature;
-
+    int step = atoi(argv[3]);
     // error checking started
     // error 1
     if (argc < 3)
@@ -583,7 +584,7 @@ int main(int argc, char *argv[])
     cout << "Original World" << endl;
     print_Grid(world);
 
-    simulation(world, 1);
+    simulation(world, 2, step);
 
     return 0;
 }
@@ -594,11 +595,70 @@ void hop(world_t &world, point_t pt, direction_t dir)
     {
         point_t next_Point = adjacentPoint(pt, dir);
         world.grid.squares[next_Point.r][next_Point.c] = world.grid.squares[pt.r][pt.c];
+        world.grid.squares[pt.r][pt.c]->location.r = next_Point.r;
+        world.grid.squares[pt.r][pt.c]->location.c = next_Point.c;
         world.grid.squares[pt.r][pt.c] = NULL;
     }
 }
 
-void simulation(world_t &world, int round)
+void left(world_t &world, point_t pt)
+{
+    // direction_t temp_direction = world.grid.squares[pt.r][pt.c]->direction;
+    world.grid.squares[pt.r][pt.c]->programID++;
+    if (world.grid.squares[pt.r][pt.c]->direction == EAST)
+    {
+        world.grid.squares[pt.r][pt.c]->direction = NORTH;
+    }
+    else if (world.grid.squares[pt.r][pt.c]->direction == WEST)
+    {
+        world.grid.squares[pt.r][pt.c]->direction = SOUTH;
+    }
+    else if (world.grid.squares[pt.r][pt.c]->direction == NORTH)
+    {
+        world.grid.squares[pt.r][pt.c]->direction = WEST;
+    }
+    else if (world.grid.squares[pt.r][pt.c]->direction == SOUTH)
+    {
+        world.grid.squares[pt.r][pt.c]->direction = EAST;
+    }
+}
+
+void right(world_t &world, point_t pt)
+{
+    // direction_t temp_direction = world.grid.squares[pt.r][pt.c]->direction;
+    world.grid.squares[pt.r][pt.c]->programID++;
+    if (world.grid.squares[pt.r][pt.c]->direction == EAST)
+    {
+        world.grid.squares[pt.r][pt.c]->direction = SOUTH;
+    }
+    else if (world.grid.squares[pt.r][pt.c]->direction == WEST)
+    {
+        world.grid.squares[pt.r][pt.c]->direction = NORTH;
+    }
+    else if (world.grid.squares[pt.r][pt.c]->direction == NORTH)
+    {
+        world.grid.squares[pt.r][pt.c]->direction = EAST;
+    }
+    else if (world.grid.squares[pt.r][pt.c]->direction == SOUTH)
+    {
+        world.grid.squares[pt.r][pt.c]->direction = WEST;
+    }
+}
+void infect(world_t &world, point_t pt, direction_t dir)
+{
+    int ID_in_Infect = world.grid.squares[pt.r][pt.c]->programID;
+    point_t next_point = adjacentPoint(pt, dir);
+    if (Enemy_Warning(world, pt, dir))
+    {
+        world.grid.squares[next_point.r][next_point.c]->species=world.grid.squares[pt.r][pt.c]->species;//指向的物种类别变成和现在的物种一样
+        ID_in_Infect = world.grid.squares[next_point.r][next_point.c]->programID;
+        // world.grid.squares[next_point.r][next_point.c]->species->program[]
+    }
+}
+
+
+
+void simulation(world_t &world, int round, int step)
 {
     for (int rr = 1; rr <= round; rr++)
     { /////////////////////////////////round
@@ -628,8 +688,32 @@ void simulation(world_t &world, int round)
                 if (current_instruction.op == HOP)
                 {
                     hop(world, current_point, current_direction);
-                   continueWithNextInstruction = false;
+                    
+                    continueWithNextInstruction = false;
                 }
+
+                if (current_instruction.op == LEFT)
+                {
+                    left(world, current_point);
+                    continueWithNextInstruction = false;
+                }
+                if (current_instruction.op == RIGHT)
+                {
+                    right(world, current_point);
+                    continueWithNextInstruction = false;
+                }
+
+                if( current_instruction.op == INFECT)
+                {
+                    infect(world, current_point,current_direction);//看看是所有都会改还是只有species会改
+                    continueWithNextInstruction = false;
+                }
+
+                if(current_instruction.op == GO)
+                {
+                    go_To_Step(world, step);
+                }
+
                 cout << "world after " << counter + 1 << " step" << endl;
                 print_Grid(world);
                 if (!continueWithNextInstruction)
