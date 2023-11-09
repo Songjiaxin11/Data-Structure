@@ -52,7 +52,6 @@ void print_Operation(opcode_t &op)
 void simulation(world_t &world, int round);
 void hop(world_t &world, point_t pt, direction_t dir);
 
-
 point_t adjacentPoint(point_t pt, direction_t dir)
 {
     if (dir == EAST)
@@ -586,7 +585,6 @@ int main(int argc, char *argv[])
 
     simulation(world, 1);
 
-
     return 0;
 }
 void hop(world_t &world, point_t pt, direction_t dir)
@@ -618,8 +616,9 @@ void simulation(world_t &world, int round)
 
             for (int counter = 0; counter < world.creatures[number].species->programSize; counter++)
             { ////////////////////instruction
-            int current_programID = world.creatures[number].programID;
-            instruction_t current_instruction = world.creatures[number].species->program[current_programID];
+                bool continueWithNextInstruction = true;
+                int current_programID = world.creatures[number].programID;
+                instruction_t current_instruction = world.creatures[number].species->program[current_programID];
 
                 // Instruction 1: hop
                 cout << "Instruction " << counter + 1 << ": ";
@@ -629,11 +628,15 @@ void simulation(world_t &world, int round)
                 if (current_instruction.op == HOP)
                 {
                     hop(world, current_point, current_direction);
+                   continueWithNextInstruction = false;
                 }
-                cout << "world after "<<counter+1<< " step" << endl;
+                cout << "world after " << counter + 1 << " step" << endl;
                 print_Grid(world);
+                if (!continueWithNextInstruction)
+                {
+                    break; // Exit the instruction loop if no n
+                }
             }
-
         }
     }
 }
