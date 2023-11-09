@@ -115,7 +115,7 @@ bool is_Empty(world_t &world, point_t pt, direction_t dir)
 bool inside_bound(world_t &world, point_t pt, direction_t dir)
 {
     point_t check_point = adjacentPoint(pt, dir);
-    if (check_point.r < world.grid.height && check_point.c < world.grid.width)
+    if (check_point.r >= 0 && check_point.c >= 0 && check_point.r < world.grid.height && check_point.c < world.grid.width)
     {
         return true;
     }
@@ -128,7 +128,7 @@ bool inside_bound(world_t &world, point_t pt, direction_t dir)
 bool Enemy_Warning(world_t &world, point_t pt, direction_t dir)
 {
     point_t check_point = adjacentPoint(pt, dir);
-    if (is_Empty(world, pt, dir) == false)
+    if (inside_bound(world, pt, dir) && is_Empty(world, pt, dir) == false)
     {
         // 前方有东西, 且下一步的creature和当前不同
         if (world.grid.squares[check_point.r][check_point.c]->species != world.grid.squares[pt.r][pt.c]->species)
@@ -150,7 +150,7 @@ bool Enemy_Warning(world_t &world, point_t pt, direction_t dir)
 bool Friend_In_Front(world_t &world, point_t pt, direction_t dir)
 {
     point_t check_point = adjacentPoint(pt, dir);
-    if (is_Empty(world, pt, dir) == false)
+    if (inside_bound(world, pt, dir) && is_Empty(world, pt, dir) == false)
     {
         // 前方有东西, 且下一步的creature和当前相同
         if (world.grid.squares[check_point.r][check_point.c]->species == world.grid.squares[pt.r][pt.c]->species)
@@ -190,6 +190,32 @@ void Empty_With_Step(world_t &world, point_t pt, direction_t dir, int n)
         world.grid.squares[pt.r][pt.c]->programID++;
     }
 }
+
+void Enemy_Warning_Steps(world_t &world, point_t pt, direction_t dir, int n)
+{
+    if (Enemy_Warning(world, pt, dir))
+    {
+        world.grid.squares[pt.r][pt.c]->programID = n - 1;
+    }
+    else
+    {
+        world.grid.squares[pt.r][pt.c]->programID++;
+    }
+}
+
+void Wall_With_Step(world_t &world, point_t pt, direction_t dir, int n)
+{
+    if (!inside_bound(world, pt, dir))
+    {
+        world.grid.squares[pt.r][pt.c]->programID = n - 1;
+    }
+    else
+    {
+        world.grid.squares[pt.r][pt.c]->programID++;
+    }
+}
+
+// void
 
 void Same_With_Step(world_t &world, point_t pt, direction_t dir, int n)
 {
@@ -605,10 +631,10 @@ int main(int argc, char *argv[])
         }
     }
     */
-    cout << "Original World" << endl;
+    cout << "Initial state" << endl;
     print_Grid(world);
 
-    simulation(world, 2, step);
+    simulation(world, 40, step);
 
     return 0;
 }
@@ -670,7 +696,8 @@ void right(world_t &world, point_t pt)
 }
 void infect(world_t &world, point_t pt, direction_t dir)
 {
-    int ID_in_Infect = world.grid.squares[pt.r][pt.c]->programID;
+    int ID_in_Infect = world.grid.squares[pt.r][pt.c]->programID++;
+    
     point_t next_point = adjacentPoint(pt, dir);
     if (Enemy_Warning(world, pt, dir))
     {
@@ -745,8 +772,15 @@ void simulation(world_t &world, int round, int step)
                 {
                     Same_With_Step(world, current_point, current_direction, current_instruction.address);
                 }
+                if (current_instruction.op == IFWALL)
+                {
+                    Wall_With_Step(world, current_point, current_direction, current_instruction.address);
+                }
+                if(current_instruction.op == IFENEMY)
+                {
+                    Enemy_Warning_Steps(world, current_point, current_direction, current_instruction.address);
+                }
 
-                cout << "world after " << counter + 1 << " step" << endl;
                 print_Grid(world);
                 if (!continueWithNextInstruction)
                 {
