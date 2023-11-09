@@ -131,7 +131,7 @@ bool Enemy_Warning(world_t &world, point_t pt, direction_t dir)
     if (is_Empty(world, pt, dir) == false)
     {
         // 前方有东西, 且下一步的creature和当前不同
-        if (world.grid.squares[check_point.r][check_point.c] != world.grid.squares[pt.r][pt.c])
+        if (world.grid.squares[check_point.r][check_point.c]->species != world.grid.squares[pt.r][pt.c]->species)
         {
             return true;
         }
@@ -153,7 +153,7 @@ bool Friend_In_Front(world_t &world, point_t pt, direction_t dir)
     if (is_Empty(world, pt, dir) == false)
     {
         // 前方有东西, 且下一步的creature和当前相同
-        if (world.grid.squares[check_point.r][check_point.c] == world.grid.squares[pt.r][pt.c])
+        if (world.grid.squares[check_point.r][check_point.c]->species == world.grid.squares[pt.r][pt.c]->species)
         {
             return true;
         }
@@ -174,9 +174,33 @@ bool Friend_In_Front(world_t &world, point_t pt, direction_t dir)
  * @param creature
  * @param n
  */
-void go_To_Step(world_t &world, int n)
+void go_To_Step(world_t &world, point_t pt, int n)
 {
-    world.creatures->programID = n+1;
+    world.grid.squares[pt.r][pt.c]->programID = n - 1;
+}
+
+void Empty_With_Step(world_t &world, point_t pt, direction_t dir, int n)
+{
+    if (inside_bound(world, pt, dir) && is_Empty(world, pt, dir))
+    {
+        world.grid.squares[pt.r][pt.c]->programID = n - 1;
+    }
+    else
+    {
+        world.grid.squares[pt.r][pt.c]->programID++;
+    }
+}
+
+void Same_With_Step(world_t &world, point_t pt, direction_t dir, int n)
+{
+    if (Friend_In_Front(world, pt, dir))
+    {
+        world.grid.squares[pt.r][pt.c]->programID = n - 1;
+    }
+    else
+    {
+        world.grid.squares[pt.r][pt.c]->programID++;
+    }
 }
 
 // instructiond 顺序移动至下一步
@@ -650,13 +674,11 @@ void infect(world_t &world, point_t pt, direction_t dir)
     point_t next_point = adjacentPoint(pt, dir);
     if (Enemy_Warning(world, pt, dir))
     {
-        world.grid.squares[next_point.r][next_point.c]->species=world.grid.squares[pt.r][pt.c]->species;//指向的物种类别变成和现在的物种一样
+        world.grid.squares[next_point.r][next_point.c]->species = world.grid.squares[pt.r][pt.c]->species; // 指向的物种类别变成和现在的物种一样
         ID_in_Infect = world.grid.squares[next_point.r][next_point.c]->programID;
         // world.grid.squares[next_point.r][next_point.c]->species->program[]
     }
 }
-
-
 
 void simulation(world_t &world, int round, int step)
 {
@@ -688,7 +710,7 @@ void simulation(world_t &world, int round, int step)
                 if (current_instruction.op == HOP)
                 {
                     hop(world, current_point, current_direction);
-                    
+
                     continueWithNextInstruction = false;
                 }
 
@@ -703,15 +725,25 @@ void simulation(world_t &world, int round, int step)
                     continueWithNextInstruction = false;
                 }
 
-                if( current_instruction.op == INFECT)
+                if (current_instruction.op == INFECT)
                 {
-                    infect(world, current_point,current_direction);//看看是所有都会改还是只有species会改
+                    infect(world, current_point, current_direction); // 看看是所有都会改还是只有species会改
                     continueWithNextInstruction = false;
                 }
 
-                if(current_instruction.op == GO)
+                if (current_instruction.op == GO)
                 {
-                    go_To_Step(world, step);
+                    go_To_Step(world, current_point, current_instruction.address);
+                }
+
+                if (current_instruction.op == IFEMPTY)
+                {
+                    Empty_With_Step(world, current_point, current_direction, current_instruction.address);
+                }
+
+                if (current_instruction.op == IFSAME)
+                {
+                    Same_With_Step(world, current_point, current_direction, current_instruction.address);
                 }
 
                 cout << "world after " << counter + 1 << " step" << endl;
