@@ -734,9 +734,8 @@ void simulation(world_t &world, int round)
                 int current_programID = world.creatures[number].programID;
                 instruction_t current_instruction = world.creatures[number].species->program[current_programID];
 
-                // Instruction 1: hop
 
-                cout << "Instruction " << counter + 1 << ": ";
+                cout << "Instruction " << current_programID + 1 << ": ";
 
                 print_Operation(current_instruction.op);
                 if (current_instruction.op != HOP && current_instruction.op != LEFT && current_instruction.op != RIGHT && current_instruction.op != INFECT)
