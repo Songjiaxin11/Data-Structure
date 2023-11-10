@@ -8,13 +8,12 @@
 #include "world_type.h"
 using namespace std;
 
-
 /**
  * @brief IMPORTANT
- * 
- * @param pt 
- * @param dir 
- * @return point_t 
+ *
+ * @param pt
+ * @param dir
+ * @return point_t
  */
 point_t adjacentPoint(point_t pt, direction_t dir)
 {
@@ -48,7 +47,7 @@ point_t adjacentPoint(point_t pt, direction_t dir)
 bool inside_bound(world_t &world, point_t pt, direction_t dir)
 {
     point_t check_point = adjacentPoint(pt, dir);
-    if (check_point.r >= 0 && check_point.c >= 0 && check_point.r < world.grid.height && check_point.c < world.grid.width)
+    if (check_point.r >= 0 && check_point.c >= 0 && check_point.r < static_cast<int>(world.grid.height) && check_point.c < static_cast<int>(world.grid.width))
     {
         return true;
     }
@@ -69,8 +68,8 @@ bool inside_bound(world_t &world, point_t pt, direction_t dir)
  * @return false
  */
 /**
- * 
-*/
+ *
+ */
 void print_Operation(opcode_t &op)
 {
     if (op == HOP)
@@ -133,12 +132,12 @@ bool is_Empty(world_t &world, point_t pt, direction_t dir)
 
 /**
  * @brief Enemy_Warning
- * 
- * @param world 
- * @param pt 
- * @param dir 
- * @return true 
- * @return false 
+ *
+ * @param world
+ * @param pt
+ * @param dir
+ * @return true
+ * @return false
  */
 bool Enemy_Warning(world_t &world, point_t pt, direction_t dir)
 {
@@ -163,12 +162,12 @@ bool Enemy_Warning(world_t &world, point_t pt, direction_t dir)
 
 /**
  * @brief Friend_In_Front
- * 
- * @param world 
- * @param pt 
- * @param dir 
- * @return true 
- * @return false 
+ *
+ * @param world
+ * @param pt
+ * @param dir
+ * @return true
+ * @return false
  */
 bool Friend_In_Front(world_t &world, point_t pt, direction_t dir)
 {
@@ -193,10 +192,10 @@ bool Friend_In_Front(world_t &world, point_t pt, direction_t dir)
 
 /**
  * @brief go_To_Step Empty_With_Step Enemy_Warning_Steps
- * 
- * @param world 
- * @param pt 
- * @param n 
+ *
+ * @param world
+ * @param pt
+ * @param n
  */
 void go_To_Step(world_t &world, point_t pt, int n)
 {
@@ -229,11 +228,11 @@ void Enemy_Warning_Steps(world_t &world, point_t pt, direction_t dir, int n)
 
 /**
  * @brief Wall_With_Step
- * 
- * @param world 
- * @param pt 
- * @param dir 
- * @param n 
+ *
+ * @param world
+ * @param pt
+ * @param dir
+ * @param n
  */
 void Wall_With_Step(world_t &world, point_t pt, direction_t dir, int n)
 {
@@ -249,11 +248,11 @@ void Wall_With_Step(world_t &world, point_t pt, direction_t dir, int n)
 
 /**
  * @brief Same_With_Step
- * 
- * @param world 
- * @param pt 
- * @param dir 
- * @param n 
+ *
+ * @param world
+ * @param pt
+ * @param dir
+ * @param n
  */
 void Same_With_Step(world_t &world, point_t pt, direction_t dir, int n)
 {
@@ -268,9 +267,9 @@ void Same_With_Step(world_t &world, point_t pt, direction_t dir, int n)
 }
 /**
  * @brief printInt2Enum
- * 
- * @param output 
- * @param flag 
+ *
+ * @param output
+ * @param flag
  */
 void printInt2Enum(int output, bool flag = true)
 {
@@ -324,14 +323,14 @@ void printInt2Enum(int output, bool flag = true)
 
 /**
  * @brief print_Grid
- * 
- * @param world 
+ *
+ * @param world
  */
 void print_Grid(world_t &world)
 {
-    for (int r = 0; r < world.grid.height; r++)
+    for (int r = 0; r < static_cast<int>(world.grid.height); r++)
     {
-        for (int c = 0; c < world.grid.width; c++)
+        for (int c = 0; c < static_cast<int>(world.grid.width); c++)
         {
             if (world.grid.squares[r][c] != NULL)
             {
@@ -352,15 +351,14 @@ void print_Grid(world_t &world)
 
 /**
  * @brief initialize
- * 
- * @param world 
- * @param speciesFile 
- * @param creaturesFile 
- * @return true 
- * @return false 
+ *
+ * @param world
+ * @param speciesFile
+ * @param creaturesFile
+ * @return true
+ * @return false
  */
-bool initWorld(world_t &world, const string &speciesFile,
-               const string &creaturesFile)
+bool initWorld(world_t &world, const string &speciesFile, const string &creaturesFile)
 {
     // types to be used
     // 在initWorld函数内部
@@ -394,15 +392,28 @@ bool initWorld(world_t &world, const string &speciesFile,
     while (getline(inputFile, line))
     {
         Species_Name[i] = line;
+        // if (Species_Name[i] != "hop" && Species_Name[i] != "alt_rover" && Species_Name[i] != "flytrap" && Species_Name[i] != "food" && Species_Name[i] != "landmine" && Species_Name[i] != "lrover" && Species_Name[i] != "pathfinder" && Species_Name[i] != "rrover")
+        // {
+        //     cout << "Error: Species " << Species_Name[i] << " not found!" << endl;
+        //     return 0;
+        // } // error check 8
+
         world.numSpecies++;
+        // if (world.numSpecies > MAXSPECIES)
+        // {
+        //     cout << "Error: Too many species!" << endl;
+        //     cout << "Maximal number of species is " << MAXSPECIES << "." << endl;
+        //     return 0;
+        // } // error 4
+
         world.species[i].name = Species_Name[i];
 
         // cout << Species_Name[i] << endl;
         // 打开speciesName对应的同名文件
         ifstream inFileCreature(dir_Name + '/' + Species_Name[i]);
-        if (!inputFile)
+        if (!inFileCreature)
         {
-            cout << "Error: Cannot open file " << dir_Name + '/' + Species_Name[i] << endl;
+            cout << "Error: Cannot open file " << dir_Name + '/' + Species_Name[i] <<"!"<< endl;
             return false;
         }
         // cout<<"read success"<<endl;
@@ -419,6 +430,12 @@ bool initWorld(world_t &world, const string &speciesFile,
             }
             Species_Instruction[j] = line;
             world.species[i].programSize++;
+            // if (world.species[i].programSize > MAXPROGRAM)
+            // {
+            //     cout << "Error: Too many instructions for species " << world.species[i].name << "!" << endl;
+            //     cout << "Maximal number of instructions is " << MAXPROGRAM << "." << endl;
+            //     return 0;
+            // } // error check 5
 
             // species.program[j-1] = Species_Instruction[j-1];//然后还要拆分出来
             // 把Species_Instruction[j]中的前半部分存到world.species.program.op中, 后面的integer存到world.species.program.address中
@@ -469,7 +486,7 @@ bool initWorld(world_t &world, const string &speciesFile,
             else
             {
                 cout << "Error: Instruction " << str_part << " is not recognized!" << endl;
-                exit(0);
+                return false;
             }
             k++; //
             // cout << Species_Instruction[j] << endl;
@@ -491,11 +508,21 @@ bool initWorld(world_t &world, const string &speciesFile,
     getline(inFileSmallCreature, line);
     stringstream s2(line); // s2读取每个worldfile的height和width
     s2 >> height;
+    // if (height > static_cast<int>(MAXHEIGHT))
+    // {
+    //     cout << "Error: The grid height is illegal!" << endl;
+    //     return 0;
+    // }//error check
     world.grid.height = height;
     getline(inFileSmallCreature, line);
     s2.clear();
     s2.str(line);
     s2 >> width;
+    // if (height > static_cast<int>(MAXWIDTH))
+    // {
+    //     cout << "Error: The grid width is illegal!" << endl;
+    //     return 0;
+    // }//error check
     world.grid.width = width;
 
     // 读species_t *species
@@ -509,11 +536,24 @@ bool initWorld(world_t &world, const string &speciesFile,
         }
         Creature_Properties[i1] = line; // i1要记得++和归零
         world.numCreatures++;
+        // if (static_cast<int>(world.numCreatures) > static_cast<int>(MAXCREATURES))
+        // {
+        //     cout << "Error: Too many creatures!" << endl;
+        //     cout << "Maximal number of creatures is" << MAXCREATURES << "." << endl;
+        //     return 0;
+        // }                      // error check 7
         stringstream s3(line); // s3读取每个creature的一整行property
         string species_part;
         string direction_part;
         s3 >> species_part >> direction_part >> row >> col;
         // 存到world.creatures[i1].location的r和c
+        if (row > static_cast<int>(world.grid.height) || col > static_cast<int>(world.grid.width) || row < 0 || col < 0)
+        {
+            cout << "Error: Creature (" << world.creatures[i1].species->name << ") is out of bound!" << endl;
+            cout << "The grid size is " << row << "-by-" << col << endl;
+            return 0;
+        } // error check
+
         world.creatures[i1].location.r = row;
         world.creatures[i1].location.c = col;
         // 存到world.creatures[i1].direction
@@ -536,10 +576,10 @@ bool initWorld(world_t &world, const string &speciesFile,
         else
         {
             cout << "Error: Direction " << direction_part << "is not recognized!" << endl;
-            exit(0);
-        }
+            return false;
+        } // error check
         // 读取creature对应的*species
-        for (int j1 = 0; j1 < world.numSpecies; j1++)
+        for (int j1 = 0; j1 < static_cast<int>(world.numSpecies); j1++)
         {
             if (species_part == world.species[j1].name)
             {
@@ -557,15 +597,23 @@ bool initWorld(world_t &world, const string &speciesFile,
             }
         }
         // 读取grid_t中的creature_t *squares[MAXHEIGHT][MAXWIDTH];
-        for (int j2 = 0; j2 < world.numCreatures; j2++)
+        for (int j2 = 0; j2 < static_cast<int>(world.numCreatures); j2++)
         {
             int r = world.creatures[j2].location.r;
             int c = world.creatures[j2].location.c;
+            if (world.grid.squares[r][c] != NULL)
+            {
+                cout<< "Error: Creature (" << world.creatures[j2].species->name <<" ";
+                printInt2Enum(world.creatures[j2].direction,false);
+                cout<< r<<" "<<c<<") overlaps with creature (";
+                cout<<world.grid.squares[r][c]->species->name<<" ";
+                printInt2Enum(world.grid.squares[r][c]->direction,false);
+                cout<<r<<" "<<c<<")!"<<endl;
+                // cout << "Error: Square at (" << r << ", " << c << ") already has a creature." << endl;
+                exit(1); // Exit the program with an error code
+            }
             world.grid.squares[r][c] = &world.creatures[j2];
-            // cout << "-------You are here " << world.grid.squares[r][c]->species->name << "------" << endl;
         }
-
-        // 初始化programID应该是错的
         world.creatures[i1].programID = 0;
 
         i1++; // 下一个creature
@@ -575,11 +623,11 @@ bool initWorld(world_t &world, const string &speciesFile,
 }
 
 /**
- * @brief 
- * 
- * @param world 
- * @param pt 
- * @param dir 
+ * @brief
+ *
+ * @param world
+ * @param pt
+ * @param dir
  */
 void hop(world_t &world, point_t pt, direction_t dir)
 {
@@ -595,9 +643,9 @@ void hop(world_t &world, point_t pt, direction_t dir)
 }
 /**
  * @brief LEFT
- * 
- * @param world 
- * @param pt 
+ *
+ * @param world
+ * @param pt
  */
 void left(world_t &world, point_t pt)
 {
@@ -622,9 +670,9 @@ void left(world_t &world, point_t pt)
 }
 /**
  * @brief RIGHT
- * 
- * @param world 
- * @param pt 
+ *
+ * @param world
+ * @param pt
  */
 void right(world_t &world, point_t pt)
 {
@@ -648,13 +696,12 @@ void right(world_t &world, point_t pt)
     }
 }
 
-
 /**
  * @brief INFECT
- * 
- * @param world 
- * @param pt 
- * @param dir 
+ *
+ * @param world
+ * @param pt
+ * @param dir
  */
 void infect(world_t &world, point_t pt, direction_t dir)
 {
@@ -676,19 +723,19 @@ void infect(world_t &world, point_t pt, direction_t dir)
 
 /**
  * @brief SIMULATION
- * 
- * @param world 
- * @param round 
- * @param difficulty 
+ *
+ * @param world
+ * @param round
+ * @param difficulty
  */
 void simulation(world_t &world, int round, bool difficulty)
 {
     for (int rr = 1; rr <= round; rr++)
     { /////////////////////////////////round
         cout << "Round " << rr << endl;
-        for (int number = 0; number < world.numCreatures; number++)
+        for (int number = 0; number < static_cast<int>(world.numCreatures); number++)
         { /////////////////////////////////creature
-            creature_t currrent_Creature = world.creatures[number];
+            // creature_t currrent_Creature = world.creatures[number];
             string current_Species = world.creatures[number].species->name;
             direction_t current_direction = world.creatures[number].direction;
             point_t current_point = world.creatures[number].location;
@@ -698,7 +745,7 @@ void simulation(world_t &world, int round, bool difficulty)
             if (difficulty)
                 cout << current_point.r << " " << current_point.c << ") takes action:" << endl;
 
-            for (int counter = 0; counter < world.creatures[number].species->programSize; counter++)
+            for (int counter = 0; counter < static_cast<int>(world.creatures[number].species->programSize); counter++)
             { ////////////////////instruction
                 bool continueWithNextInstruction = true;
                 int current_programID = world.creatures[number].programID;
@@ -789,9 +836,9 @@ void simulation(world_t &world, int round, bool difficulty)
                 }
             }
         }
-        if(!difficulty)
-            {
-                print_Grid(world);
-            }
+        if (!difficulty)
+        {
+            print_Grid(world);
+        }
     }
 }
