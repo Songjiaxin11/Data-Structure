@@ -387,24 +387,19 @@ bool initWorld(world_t &world, const string &speciesFile, const string &creature
     getline(inputFile, line);
     string dir_Name = line;
     // cout<<dir_Name<<endl;
-
+    world.numSpecies = 0;
+    world.numCreatures = 0;
     // 从species中继续读取, 将读取结果存储到Species_Name中
     while (getline(inputFile, line))
     {
         Species_Name[i] = line;
-        // if (Species_Name[i] != "hop" && Species_Name[i] != "alt_rover" && Species_Name[i] != "flytrap" && Species_Name[i] != "food" && Species_Name[i] != "landmine" && Species_Name[i] != "lrover" && Species_Name[i] != "pathfinder" && Species_Name[i] != "rrover")
-        // {
-        //     cout << "Error: Species " << Species_Name[i] << " not found!" << endl;
-        //     return 0;
-        // } // error check 8
-
         world.numSpecies++;
-        // if (world.numSpecies > MAXSPECIES)
-        // {
-        //     cout << "Error: Too many species!" << endl;
-        //     cout << "Maximal number of species is " << MAXSPECIES << "." << endl;
-        //     return 0;
-        // } // error 4
+        if (world.numSpecies > MAXSPECIES)
+        {
+            cout << "Error: Too many species!" << endl;
+            cout << "Maximal number of species is " << MAXSPECIES << "." << endl;
+            return false;
+        } // error 4
 
         world.species[i].name = Species_Name[i];
 
@@ -413,7 +408,7 @@ bool initWorld(world_t &world, const string &speciesFile, const string &creature
         ifstream inFileCreature(dir_Name + '/' + Species_Name[i]);
         if (!inFileCreature)
         {
-            cout << "Error: Cannot open file " << dir_Name + '/' + Species_Name[i] <<"!"<< endl;
+            cout << "Error: Cannot open file " << dir_Name + '/' + Species_Name[i] << "!" << endl;
             return false;
         }
         // cout<<"read success"<<endl;
@@ -430,12 +425,12 @@ bool initWorld(world_t &world, const string &speciesFile, const string &creature
             }
             Species_Instruction[j] = line;
             world.species[i].programSize++;
-            // if (world.species[i].programSize > MAXPROGRAM)
-            // {
-            //     cout << "Error: Too many instructions for species " << world.species[i].name << "!" << endl;
-            //     cout << "Maximal number of instructions is " << MAXPROGRAM << "." << endl;
-            //     return 0;
-            // } // error check 5
+            if (world.species[i].programSize > MAXPROGRAM)
+            {
+                cout << "Error: Too many instructions for species " << world.species[i].name << "!" << endl;
+                cout << "Maximal number of instructions is " << MAXPROGRAM << "." << endl;
+                return false;
+            } // error check 5
 
             // species.program[j-1] = Species_Instruction[j-1];//然后还要拆分出来
             // 把Species_Instruction[j]中的前半部分存到world.species.program.op中, 后面的integer存到world.species.program.address中
@@ -508,21 +503,21 @@ bool initWorld(world_t &world, const string &speciesFile, const string &creature
     getline(inFileSmallCreature, line);
     stringstream s2(line); // s2读取每个worldfile的height和width
     s2 >> height;
-    // if (height > static_cast<int>(MAXHEIGHT))
-    // {
-    //     cout << "Error: The grid height is illegal!" << endl;
-    //     return 0;
-    // }//error check
+    if (height > static_cast<int>(MAXHEIGHT))
+    {
+        cout << "Error: The grid height is illegal!" << endl;
+        return false;
+    } // error check
     world.grid.height = height;
     getline(inFileSmallCreature, line);
     s2.clear();
     s2.str(line);
     s2 >> width;
-    // if (height > static_cast<int>(MAXWIDTH))
-    // {
-    //     cout << "Error: The grid width is illegal!" << endl;
-    //     return 0;
-    // }//error check
+    if (height > static_cast<int>(MAXWIDTH))
+    {
+        cout << "Error: The grid width is illegal!" << endl;
+        return false;
+    } // error check
     world.grid.width = width;
 
     // 读species_t *species
@@ -536,26 +531,20 @@ bool initWorld(world_t &world, const string &speciesFile, const string &creature
         }
         Creature_Properties[i1] = line; // i1要记得++和归零
         world.numCreatures++;
-        // if (static_cast<int>(world.numCreatures) > static_cast<int>(MAXCREATURES))
-        // {
-        //     cout << "Error: Too many creatures!" << endl;
-        //     cout << "Maximal number of creatures is" << MAXCREATURES << "." << endl;
-        //     return 0;
-        // }                      // error check 7
+        if (static_cast<int>(world.numCreatures) > static_cast<int>(MAXCREATURES))
+        {
+            cout << "Error: Too many creatures!" << endl;
+            cout << "Maximal number of creatures is" << MAXCREATURES << "." << endl;
+            return false;
+        }                      // error check 7
         stringstream s3(line); // s3读取每个creature的一整行property
         string species_part;
         string direction_part;
         s3 >> species_part >> direction_part >> row >> col;
-        // 存到world.creatures[i1].location的r和c
-        if (row > static_cast<int>(world.grid.height) || col > static_cast<int>(world.grid.width) || row < 0 || col < 0)
-        {
-            cout << "Error: Creature (" << world.creatures[i1].species->name << ") is out of bound!" << endl;
-            cout << "The grid size is " << row << "-by-" << col << endl;
-            return 0;
-        } // error check
-
         world.creatures[i1].location.r = row;
         world.creatures[i1].location.c = col;
+        // 存到world.creatures[i1].location的r和c
+
         // 存到world.creatures[i1].direction
         if (direction_part == "east")
         {
@@ -578,16 +567,29 @@ bool initWorld(world_t &world, const string &speciesFile, const string &creature
             cout << "Error: Direction " << direction_part << "is not recognized!" << endl;
             return false;
         } // error check
+
         // 读取creature对应的*species
-        for (int j1 = 0; j1 < static_cast<int>(world.numSpecies); j1++)
+        bool is_find = false;
+        if (!is_find)
         {
-            if (species_part == world.species[j1].name)
+            for (int j1 = 0; j1 < static_cast<int>(world.numSpecies); j1++)
             {
-                world.creatures[i1].species = &world.species[j1];
-                // cout << "-------------------------------NAME: " << world.creatures[i1].species->name << "-----------------------" << endl;
-                break;
+                if (species_part == world.species[j1].name)
+                {
+                    is_find = true;
+                    world.creatures[i1].species = &world.species[j1];
+                    // cout << "-------------------------------NAME: " << world.creatures[i1].species->name << "-----------------------" << endl;
+                    break;
+                }
             }
+            if (!is_find)
+            {
+                cout << "Error: Species " << species_part << " not found!" << endl;
+                return false;
+            }
+            is_find = false;
         }
+
         // 把所有grid中的*squares[][]设置为NULL
         for (unsigned int r = 0; r < MAXHEIGHT; r++) // 要加等号height=3, 0123全部存东西
         {
@@ -603,21 +605,33 @@ bool initWorld(world_t &world, const string &speciesFile, const string &creature
             int c = world.creatures[j2].location.c;
             if (world.grid.squares[r][c] != NULL)
             {
-                cout<< "Error: Creature (" << world.creatures[j2].species->name <<" ";
-                printInt2Enum(world.creatures[j2].direction,false);
-                cout<< r<<" "<<c<<") overlaps with creature (";
-                cout<<world.grid.squares[r][c]->species->name<<" ";
-                printInt2Enum(world.grid.squares[r][c]->direction,false);
-                cout<<r<<" "<<c<<")!"<<endl;
+                cout << "Error: Creature (" << world.creatures[j2].species->name << " ";
+                printInt2Enum(world.creatures[j2].direction, false);
+                cout << r << " " << c << ") overlaps with creature (";
+                cout << world.grid.squares[r][c]->species->name << " ";
+                printInt2Enum(world.grid.squares[r][c]->direction, false);
+                cout << r << " " << c << ")!" << endl;
                 // cout << "Error: Square at (" << r << ", " << c << ") already has a creature." << endl;
-                exit(1); // Exit the program with an error code
+                return false; // Exit the program with an error code
             }
             world.grid.squares[r][c] = &world.creatures[j2];
         }
         world.creatures[i1].programID = 0;
 
+        if ((row > (static_cast<int>(world.grid.height) - 1)) || (col > (static_cast<int>(world.grid.width) - 1)) || (row < 0) || (col < 0))
+        {
+            cout << "Error: Creature (" << world.creatures[i1].species->name << " ";
+            printInt2Enum(world.creatures[i1].direction, false);
+            cout << world.creatures[i1].location.r << " " << world.creatures[i1].location.c << ") is out of bound!" << endl;
+            // cout << "Error: Creature (" << world.grid.squares[row][col]->species->name << ") is out of bound!" << endl;
+
+            cout << "The grid size is " << world.grid.height << "-by-" << world.grid.width << "." << endl;
+            return false;
+        } // error check
+
         i1++; // 下一个creature
     }
+
     i1 = 0;
     return true;
 }
