@@ -49,7 +49,7 @@ void print_Operation(opcode_t &op)
         cout << "go ";
     }
 }
-void simulation(world_t &world, int round);
+void simulation(world_t &world, int round, bool difficulty);
 void hop(world_t &world, point_t pt, direction_t dir);
 void left(world_t &world, point_t pt, direction_t dir);
 
@@ -553,6 +553,17 @@ instruction_t getInstruction(const creature_t &creature)
 
 int main(int argc, char *argv[])
 {
+    bool difficulty = false;
+    if (argc > 4)
+    {
+        string difficulty_test = argv[4];
+
+        if (difficulty_test == "v" | difficulty_test == "verbose")
+            difficulty = true;
+        else
+            difficulty = false;
+    }
+    cout << "difficulty: " << difficulty << endl;
     int i = 0;
     string line;
     ifstream iFile;
@@ -595,46 +606,10 @@ int main(int argc, char *argv[])
     bool readFile = initWorld(world, argv[1],
                               argv[2]);
 
-    // cout << "!!!!!!" << endl;
-    // inputFile.close();
-    /*
-    // test for instruction
-    for (int i = 0; i < world.numCreatures; i++)
-    {
-        creature = world.creatures[i];
-        cout << creature.species->name << " : ";
-        instruction = getInstruction(creature);
-        cout << instruction.op << " " << instruction.address << endl;
-        cout<<"ProgramID: "<<creature.programID<<endl;
-    }
-    */
-    /* test for getCreature
-    // 提取每个grid中的creature
-    for (int i = 0; i < world.numCreatures; i++)
-    {
-        for (int r = 0; r < world.grid.height; r++)
-        {
-            for (int c = 0; c < world.grid.width; c++)
-            {
-                creature_t *creature = getCreature(world, world.creatures[i].location);
-                if (creature != NULL)
-                {
-                    cout << "name: " << creature->species->name << "  ";
-                    cout << "location: "
-                         << "[" << creature->location.r << "," << creature->location.c << "]" << endl;
-                }
-                else
-                {
-                    cout << "There's no creature on this grid" << endl;
-                }
-            }
-        }
-    }
-    */
     cout << "Initial state" << endl;
     print_Grid(world);
 
-    simulation(world, round);
+    simulation(world, round, difficulty);
 
     return 0;
 }
@@ -712,7 +687,7 @@ void infect(world_t &world, point_t pt, direction_t dir)
     }
 }
 
-void simulation(world_t &world, int round)
+void simulation(world_t &world, int round, bool difficulty)
 {
     for (int rr = 1; rr <= round; rr++)
     { /////////////////////////////////round
@@ -726,52 +701,69 @@ void simulation(world_t &world, int round)
 
             cout << "Creature (" << current_Species << " ";
             printInt2Enum(current_direction, false);
-            cout << current_point.r << " " << current_point.c << ") takes action:" << endl;
+            if (difficulty)
+                cout << current_point.r << " " << current_point.c << ") takes action:" << endl;
 
             for (int counter = 0; counter < world.creatures[number].species->programSize; counter++)
             { ////////////////////instruction
                 bool continueWithNextInstruction = true;
                 int current_programID = world.creatures[number].programID;
                 instruction_t current_instruction = world.creatures[number].species->program[current_programID];
-
-
-                cout << "Instruction " << current_programID + 1 << ": ";
-
-                print_Operation(current_instruction.op);
-                if (current_instruction.op != HOP && current_instruction.op != LEFT && current_instruction.op != RIGHT && current_instruction.op != INFECT)
+                if (difficulty)
                 {
-                    cout << current_instruction.address << endl;
+                    cout << "Instruction " << current_programID + 1 << ": ";
+                    print_Operation(current_instruction.op);
                 }
-                else
+                if (difficulty)
                 {
-                    cout << endl;
+                    if (current_instruction.op != HOP && current_instruction.op != LEFT && current_instruction.op != RIGHT && current_instruction.op != INFECT)
+                    {
+                        cout << current_instruction.address << endl;
+                    }
+                    else
+                    {
+                        cout << endl;
+                    }
+                }
+                if (!difficulty)
+                {
+                    if (current_instruction.op == HOP || current_instruction.op == LEFT || current_instruction.op == RIGHT || current_instruction.op == INFECT)
+                    {
+                        cout << current_point.r << " " << current_point.c << ") takes action: ";
+                        print_Operation(current_instruction.op);
+                        cout << endl;
+                    }
                 }
 
                 if (current_instruction.op == HOP)
                 {
                     hop(world, current_point, current_direction);
                     continueWithNextInstruction = false;
-                    print_Grid(world);
+                    if (difficulty)
+                        print_Grid(world);
                 }
 
                 if (current_instruction.op == LEFT)
                 {
                     left(world, current_point);
                     continueWithNextInstruction = false;
-                    print_Grid(world);
+                    if (difficulty)
+                        print_Grid(world);
                 }
                 if (current_instruction.op == RIGHT)
                 {
                     right(world, current_point);
                     continueWithNextInstruction = false;
-                    print_Grid(world);
+                    if (difficulty)
+                        print_Grid(world);
                 }
 
                 if (current_instruction.op == INFECT)
                 {
                     infect(world, current_point, current_direction); // 看看是所有都会改还是只有species会改
                     continueWithNextInstruction = false;
-                    print_Grid(world);
+                    if (difficulty)
+                        print_Grid(world);
                 }
 
                 if (current_instruction.op == GO)
@@ -803,5 +795,9 @@ void simulation(world_t &world, int round)
                 }
             }
         }
+        if(!difficulty)
+            {
+                print_Grid(world);
+            }
     }
 }
