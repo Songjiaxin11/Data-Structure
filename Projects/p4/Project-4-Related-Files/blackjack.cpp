@@ -43,7 +43,7 @@ Card deal_four(Hand &hand, Player *player, Deck &deck, bool faceup, bool myplaye
 int main(int argc, char *argv[])
 {
     Deck deck;
-    Player *player;
+    Player *player = NULL;
     Hand hand_Player;
     Hand hand_Dealer;
     int minimum_bet = 5;
@@ -51,7 +51,6 @@ int main(int argc, char *argv[])
     int bankroll = atoi(argv[1]);
     int hands = atoi(argv[2]);
     string mode = argv[3];
-
     if (mode == "simple")
     {
         player = get_Simple();
@@ -101,10 +100,10 @@ int main(int argc, char *argv[])
             {
                 deal_four(hand_Dealer, player, deck, true, false);
             }
-
+            cout << "Dealer's total is " << hand_Dealer.handValue().count << endl;
             if (hand_Dealer.handValue().count > 21) // dealer busts
             {
-                cout << "Dealer's total is " << hand_Dealer.handValue().count << endl;
+
                 cout << "Dealer busts\n"; // player win
 
                 bankroll = bankroll + wager;
@@ -128,7 +127,7 @@ int main(int argc, char *argv[])
                 }
             }
         }
-        if (bankroll >= minimum_bet && current_hand+1 < hands)
+        if (bankroll >= minimum_bet && current_hand + 1 < hands)
         {
             current_hand++;
         }

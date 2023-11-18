@@ -82,11 +82,8 @@ public:
             {
                 return false;
             }
-            else
-            {
-                assert("other cases in soft mode!");
-            }
         }
+        return false;
     }
 
     void expose(Card c)
@@ -123,7 +120,7 @@ public:
     bool draw(Card dealer, const Hand &player)
     {
         SimplePlayer countingMode;
-        countingMode.draw(dealer, player);
+        return countingMode.draw(dealer, player);
     }
 
     void expose(Card c)
