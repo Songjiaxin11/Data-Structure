@@ -16,7 +16,7 @@ void Hand::addCard(Card c)
 {
     if (c.spot == ACE)
     {
-        if (this->curValue.count <= 10)
+        if (!this->curValue.soft && this->curValue.count <= 10)
         {
             this->curValue.count += 11;
             this->curValue.soft = true;
@@ -33,12 +33,17 @@ void Hand::addCard(Card c)
     }
     else if (c.spot >= TWO && c.spot <= TEN)
     {
-        this->curValue.count += static_cast<int>(c.spot)+2;
+        this->curValue.count += static_cast<int>(c.spot) + 2;
+    }
+    if(this->curValue.count >21&&this->curValue.soft)
+    {
+        this->curValue.soft = false;
+        this->curValue.count-=10;
     }
 }
 
 HandValue Hand::handValue() const
 {
-    cout<<"count: "<<this->curValue.count<<endl;
+    // cout<<"count: "<<this->curValue.count<<endl;
     return this->curValue;
 }

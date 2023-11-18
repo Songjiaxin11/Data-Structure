@@ -80,6 +80,6 @@ Card Deck::deal()
 
 int Deck::cardsLeft()
 {
-    cout << DeckSize - next << endl;
+    // cout << DeckSize - next << endl;
     return DeckSize - next;
 }
