@@ -71,7 +71,6 @@ Card Deck::deal()
     }
     else
     {
-        // int nextDeal = ++next;
         // cout << "next spot: " << SuitNames[deck[nextDeal].suit] << endl;
         // cout << "next suit: " << SpotNames[deck[nextDeal].spot] << endl;
         return deck[next++]; // 处理并返回这张牌

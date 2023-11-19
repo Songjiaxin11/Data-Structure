@@ -11,7 +11,8 @@
 using namespace std;
 void multiple_shuffle(Player *player, Deck &deck)
 {
-    cout << "Shuffling the deck\n";
+    // cout << "Shuffling the deck\n";
+    cout << "Shuffling the deck" << endl;
     for (int i = 0; i < 7; ++i)
     {
         int cut = get_cut();
@@ -59,17 +60,19 @@ int main(int argc, char *argv[])
     {
         player = get_Counting();
     }
-    int wager = player->bet(bankroll, minimum_bet);
+
     multiple_shuffle(player, deck); // 洗牌
     while (bankroll >= minimum_bet && current_hand < hands)
     {
-        cout << "Hand " << current_hand + 1 << " bankroll " << bankroll << endl;
+        int cur_hand = ++current_hand;
+        cout << "Hand " << cur_hand << " bankroll " << bankroll << endl;
         hand_Dealer.discardAll();
         hand_Player.discardAll();
         if (deck.cardsLeft() < 20)
         {
             multiple_shuffle(player, deck);
         }
+        int wager = player->bet(bankroll, minimum_bet);
         cout << "Player bets " << wager << endl;
         deal_four(hand_Player, player, deck, true, true);
         Card up_card = deal_four(hand_Dealer, player, deck, true, false);
@@ -77,9 +80,9 @@ int main(int argc, char *argv[])
         Card hole_card = deal_four(hand_Dealer, player, deck, false, false);
         if (hand_Player.handValue().count == 21)
         {
-            cout << "Player dealt natural 21\n";
-            bankroll += 1.5 * wager;
-            // 这里要怎么处理?
+            cout << "Player dealt natural 21" << endl;
+            bankroll = bankroll + 1.5 * wager;
+            continue;
         }
         while (player->draw(up_card, hand_Player))
         {
@@ -89,7 +92,7 @@ int main(int argc, char *argv[])
         cout << "Player's total is " << hand_Player.handValue().count << endl;
         if (hand_Player.handValue().count > 21) // player busts
         {
-            cout << "Player busts\n";
+            cout << "Player busts" << endl;
             bankroll = bankroll - wager;
         }
         else
@@ -103,41 +106,29 @@ int main(int argc, char *argv[])
             cout << "Dealer's total is " << hand_Dealer.handValue().count << endl;
             if (hand_Dealer.handValue().count > 21) // dealer busts
             {
-
-                cout << "Dealer busts\n"; // player win
-
+                cout << "Dealer busts" << endl;
                 bankroll = bankroll + wager;
             }
             else
             {
                 if (hand_Dealer.handValue().count > hand_Player.handValue().count) // dealer win
                 {
-                    cout << "Dealer wins\n";
+                    cout << "Dealer wins" << endl;
                     bankroll = bankroll - wager;
                 }
 
                 else if (hand_Dealer.handValue().count < hand_Player.handValue().count) // player win
                 {
-                    cout << "Player wins\n";
+                    cout << "Player wins" << endl;
                     bankroll = bankroll + wager;
                 }
                 else if (hand_Dealer.handValue().count == hand_Player.handValue().count) // tie
                 {
-                    cout << "Push\n";
+                    cout << "Push" << endl;
                 }
             }
         }
-        if (bankroll >= minimum_bet && current_hand + 1 < hands)
-        {
-            current_hand++;
-        }
-        else
-        {
-            cout << "Player has " << bankroll << " after " << current_hand + 1 << " hands\n";
-            break;
-        }
-        // current_hand++; // increment of current_hand
     } // end of hands
-
+    cout << "Player has " << bankroll << " after " << current_hand << " hands\n";
     return 0;
 }

@@ -137,7 +137,6 @@ public:
 
     void shuffled()
     {
-        // Reset the count when the deck is shuffled
         this->count = 0;
     }
 };
