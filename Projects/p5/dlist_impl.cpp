@@ -90,8 +90,8 @@ T *Dlist<T>::removeFront()
     }
     // 2. 保存要删除的节点指针
     node *temp = this->first;
-    T *op = temp->op; // 复制给了指针op
-  if (this->first != this->last)// || this->last == NULL?
+    T *old = temp->op;              // 复制给了指针op
+    if (this->first != this->last || this->last == NULL) // || this->last == NULL?
     {
         // 3. 更新链表头指针, 指向原先的第一个节点的下一个节点
         this->first = temp->next;
@@ -105,9 +105,9 @@ T *Dlist<T>::removeFront()
         // first->prev = first->next = NULL;
         this->first = this->last = NULL;
     }
-  
+
     delete temp;
-    return op;
+    return old;
 }
 
 /**
@@ -126,8 +126,8 @@ T *Dlist<T>::removeBack()
     }
     // 2. 保存要删除的节点指针
     node *temp = this->last;
-    T *op = temp->op; // 复制给了指针op
-    if (this->first != this->last )// || this->first == NULL?
+    T *old2 = temp->op;              // 复制给了指针op
+    if (this->first != this->last) // || this->first == NULL?
     {
         this->last = temp->prev;
         this->last->prev = temp->prev->prev;
@@ -135,10 +135,10 @@ T *Dlist<T>::removeBack()
     }
     else
     {
-      this->first = this->last = NULL;
+        this->first = this->last = NULL;
     }
     delete temp;
-    return op;
+    return old2;
 }
 
 /**
@@ -151,7 +151,7 @@ void Dlist<T>::removeAll()
 {
     while (!this->isEmpty())
     {
-        removeFront();
+        this->removeFront();
     }
     delete last;
     delete first;
@@ -164,7 +164,6 @@ Dlist<T> &Dlist<T>::operator=(const Dlist &l)
     copyAll(l);
     return *this;
 }
-
 
 /**
  * @brief Construct a new Dlist< T>:: Dlist objectC
@@ -187,16 +186,16 @@ Dlist<T>::~Dlist()
 template <class T>
 void Dlist<T>::copyAll(const Dlist &l)
 {
-    removeAll();
+    this->removeAll();
     if (!l.isEmpty())
     {
         node *cur = l.last;
         while (cur != l.first)
         {
-            insertFront(cur->op);
+            this->insertFront(new T (*cur->op));
             cur = cur->prev;
         }
-        insertFront(cur->op);
+        this->insertFront(new T(*cur->op));
     }
 }
 
@@ -210,9 +209,13 @@ template <class T>
 Dlist<T>::Dlist(const Dlist &l)
 {
     this->first = NULL;
-    this->last = NULL;
-    removeAll();
-    copyAll(l);
+    // this->first->next = nullptr;
+    this->last = nullptr;
+    if (this != &l)
+    {
+        this->removeAll();
+        this->copyAll(l);
+    }
 }
 
 template <class T>
@@ -231,7 +234,6 @@ void Dlist<T>::print()
     }
     cout << endl;
 }
-
 
 // int main()
 // {

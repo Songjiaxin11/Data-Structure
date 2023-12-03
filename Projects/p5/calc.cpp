@@ -21,57 +21,55 @@ int main()
     {
         istringstream iss(input);
 
-        while (iss >> operation)
+        // 如果input中第一个字符不是'-'
+        if (input[0] != '-' && input[0] >= '0' && input[0] <= '9')
         {
-            if (operation == '-')
+            int num = 0;
+            if (iss >> num)
             {
-                // Handle negative numbers
-                int num;
-                if (iss >> num)
-                {
-                    stack.insertFront(new int(-num));
-                    count++;
-                }
-                else // case '-':
-                {
-                    if (count < 2)
-                    {
-                        cout << "Not enough operands\n";
-                    }
-                    else
-                    {
-                        a = stack.removeFront();
-                        b = stack.removeFront();
-                        stack.insertFront(new int(*a - *b));
-                        count--;
-                    }
-                    break;
-                }
-            }
-
-            else if (operation >= '0' && operation <= '9')
-            {
-                // Convert char to int and push onto stack
-                stack.insertFront(new int(operation - '0'));
+                stack.insertFront(new int(num));
+                // 如何使用不new的方式insertFront?
                 count++;
             }
-            else
+        }
+        else if (input[0] == '-')
+        {
+            while (iss >> operation)
+            {
+                if (operation == '-')
+                {
+                    // Handle negative numbers
+                    int num;
+                    if (iss >> num)
+                    {
+                        stack.insertFront(new int(-num));
+                        count++;
+                    }
+                    else // case '-':
+                    {
+                        if (count < 2)
+                        {
+                            cout << "Not enough operands\n";
+                        }
+                        else
+                        {
+                            a = stack.removeFront();
+                            b = stack.removeFront();
+                            stack.insertFront(new int(*a - *b));
+                            count--;
+                        }
+                        break;
+                    }
+                }
+            }
+        }
+        // if (operation == '+' || operation == '*' || operation == '*' || operation == '/' || operation == 'n' || operation == 'd' || operation == 'r' || operation == 'p' || operation == 'c' || operation == 'a')
+        else
+        {
+            while (iss >> operation)
             {
                 switch (operation)
                 {
-                // case '0':
-                // case '1':
-                // case '2':
-                // case '3':
-                // case '4':
-                // case '5':
-                // case '6':
-                // case '7':
-                // case '8':
-                // case '9':
-                //     // Convert char to int and push onto stack
-                //     stack.insertFront(new int(operation - '0'));
-                //     break;
 
                 // two operands needed
                 case 'r':
@@ -100,7 +98,10 @@ int main()
                     {
                         a = stack.removeFront();
                         b = stack.removeFront();
-                        stack.insertFront(new int(*a + *b));
+                        int result = *a + *b;
+                        int *r = &result;
+                        // stack.insertFront(new int(*a + *b));
+                        stack.insertFront(r);
                         count--;
                     }
                     break;
@@ -115,6 +116,7 @@ int main()
                     {
                         a = stack.removeFront();
                         b = stack.removeFront();
+                        int result = *a * *b;
                         stack.insertFront(new int(*a * *b));
                         count--;
                     }
@@ -192,7 +194,9 @@ int main()
 
                 case 'a':
                 {
-                    Dlist<int> cur(stack); // 先复制一份
+                    Dlist<int> *stacl_duplicator = &stack;
+                    // Dlist<int> cur(stack); // 先复制一份
+                    Dlist<int> cur(*stacl_duplicator); // 先复制一份
                     while (!cur.isEmpty())
                     {
                         int *item = cur.removeFront();
@@ -215,7 +219,8 @@ int main()
                 } // switch ends
             }     // else ends
         }         // while ends
-    }             // bit while ends
+    }             // else ends
+                  // bit while ends
 
     return 0;
 }
