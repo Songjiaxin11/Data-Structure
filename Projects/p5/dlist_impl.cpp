@@ -91,7 +91,7 @@ T *Dlist<T>::removeFront()
     // 2. 保存要删除的节点指针
     node *temp = this->first;
     T *op = temp->op; // 复制给了指针op
-  if (this->first != this->last || this->last == NULL)
+  if (this->first != this->last)// || this->last == NULL?
     {
         // 3. 更新链表头指针, 指向原先的第一个节点的下一个节点
         this->first = temp->next;
@@ -127,13 +127,11 @@ T *Dlist<T>::removeBack()
     // 2. 保存要删除的节点指针
     node *temp = this->last;
     T *op = temp->op; // 复制给了指针op
-    if (this->first != this->last || this->first == NULL)
+    if (this->first != this->last )// || this->first == NULL?
     {
-        // 3. 更新链表头指针, 指向原先的last节点的上一个节点
         this->last = temp->prev;
         this->last->prev = temp->prev->prev;
         this->last->next = NULL;
-        
     }
     else
     {
@@ -235,36 +233,36 @@ void Dlist<T>::print()
 }
 
 
-int main()
-{
-    Dlist<int> intList;
+// int main()
+// {
+//     Dlist<int> intList;
 
-    // 在列表前端插入一些元素
-    int value1 = 42;
-    int value2 = 24;
-    int value3 = 12;
-    int value4 = 18;
-    // 12 12 24 42
-    intList.insertFront(&value1);
-    intList.print();
-    intList.insertFront(&value2);
-    intList.print();
-    intList.insertBack(&value3);
-    intList.print();
-    intList.insertBack(&value4);
-    intList.print();
-    Dlist l2 = Dlist(intList);
-    l2.print();
-    l2.insertBack(&value4);
-    cout<<"l2 "<<endl;
-    l2.print();
-    Dlist l3 =l2;
-    cout<<"l3: "<<endl;
-    l3.print();
-    l3.removeFront();
-    l3.print();
-    l3.removeBack();
-    l3.print();
+//     // 在列表前端插入一些元素
+//     int value1 = 42;
+//     int value2 = 24;
+//     int value3 = 12;
+//     int value4 = 18;
+//     // 12 12 24 42
+//     intList.insertFront(&value1);
+//     intList.print();
+//     intList.insertFront(&value2);
+//     intList.print();
+//     intList.insertBack(&value3);
+//     intList.print();
+//     intList.insertBack(&value4);
+//     intList.print();
+//     Dlist l2 = Dlist(intList);
+//     l2.print();
+//     l2.insertBack(&value4);
+//     cout<<"l2 "<<endl;
+//     l2.print();
+//     Dlist l3 =l2;
+//     cout<<"l3: "<<endl;
+//     l3.print();
+//     l3.removeFront();
+//     l3.print();
+//     l3.removeBack();
+//     l3.print();
 
-    return 0;
-}
+//     return 0;
+// }
