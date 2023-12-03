@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string>
+#include <cassert>
 #include "vendingmachine.h"
 using namespace std;
 
@@ -52,6 +53,7 @@ VendingMachine::VendingMachine()
     }
     this->empty = true;
     this->type = Latte;
+    assert(repOK());
 }
 
 /**
@@ -68,12 +70,17 @@ VendingMachine::VendingMachine(FoodType type, int price)
         throw Exception("Exceed maximum type!");
     }
     this->price = new int[MAX_TYPE];
-    this->price[0] = price;
+    for (int i = 0; i < MAX_TYPE; i++)
+    {
+        this->price[i] = 0;
+    }
+    this->price[type] = price;
     this->type = type;
     if (price == 0)
         this->empty = true;
     else
         this->empty = false;
+    assert(repOK());
 }
 
 void VendingMachine::setPrice(FoodType newtype, int newprice)
@@ -82,9 +89,16 @@ void VendingMachine::setPrice(FoodType newtype, int newprice)
     {
         throw Exception("Exceed maximum type!");
     }
-    price[newtype] = newprice;
+    this->price[newtype] = newprice;
     if (newprice > 0 && newtype > type)
+    {
         this->type = newtype;
+    }
+    if (isEmpty())
+        this->empty = true;
+    else
+        this->empty = false;
+    assert(repOK());
 }
 
 int VendingMachine::getPrice(FoodType myType) const
@@ -102,8 +116,7 @@ void VendingMachine::print() const
     {
         if (price[j] > 0)
         {
-            cout << foodTypeToString(static_cast<FoodType>(j)) << " $" << price[j] << endl;
-            cout << "success" << endl;
+            cout << food[j] << " $" << price[j] << endl;
         }
     }
 }
@@ -115,7 +128,14 @@ FoodType VendingMachine::getType() const
 
 bool VendingMachine::isEmpty() const
 {
-    return this->empty;
+    for (int i = 0; i < MAX_TYPE; i++)
+    {
+        if (price[i] != 0)
+        {
+            return false;
+        }
+    }
+    return true;
 }
 
 bool VendingMachine::repOK()
@@ -124,37 +144,14 @@ bool VendingMachine::repOK()
     // 2. empty : True if there is no food exists in the current vending machine.
     // Any type of food that is more delicious than the most delicious food that currently exists
     // must have the price of 0.
-    if (this->empty)
+    if (empty != isEmpty())
     {
-        for (int i = 0; i < MAX_TYPE; i++)
-        {
-            if (price[i] != 0)
-            {
-                return false;
-            }
-        }
-        return true;
+        return false;
     }
-    if (!this->empty)
+    for (int i = getType() + 1; i < MAX_TYPE; i++)
     {
-        if (price[this->type] == 0)
-        {
+        if (price[i] != 0)
             return false;
-        }
-        for (int i = 0; i < MAX_TYPE; i++)
-        {
-            if (price[i] < 0)
-            {
-                return false;
-            }
-            // Any type of food that is more delicious than the most delicious food that currently exists
-            // must have the price of 0.
-            if (i > type && price[i] != 0)
-            {
-                return false;
-            }
-        }
-        return true;
     }
     return true;
 }
@@ -164,41 +161,41 @@ VendingMachine::~VendingMachine()
     delete[] price;
 }
 
-// int main()
-// {
-//     int test_num;
-//     cin >> test_num;
-//     try
-//     {
-//         switch (test_num)
-//         {
-//         case 1:
-//         {
-//             VendingMachine p;
-//             if (p.repOK())
-//                 cout << "success" << endl;
-//             p.print();
-//         }
-//         break;
-//         case 2:
-//         {
-//             VendingMachine p(Milk, 2);
-//             if (p.repOK())
-//                 cout << "success" << endl;
-//             p.print();
-//         }
-//         break;
-//         case 3:
-//         {
-//             VendingMachine p(Latte, 1);
-//             if (p.repOK())
-//                 cout << "success";
-//         }
-//         }
-//     }
-//     catch (Exception &e)
-//     {
-//         cout << e.what();
-//     }
-//     cout << endl;
-// }
+int main()
+{
+    int test_num;
+    cin >> test_num;
+    try
+    {
+        switch (test_num)
+        {
+        case 1:
+        {
+            VendingMachine p;
+            if (p.repOK())
+                cout << "success" << endl;
+            p.print();
+        }
+        break;
+        case 2:
+        {
+            VendingMachine p(Milk, 0);
+            if (p.repOK())
+                cout << "success" << endl;
+            p.print();
+        }
+        break;
+        case 3:
+        {
+            VendingMachine p(Latte, 1);
+            if (p.repOK())
+                cout << "success";
+        }
+        }
+    }
+    catch (Exception &e)
+    {
+        cout << e.what();
+    }
+    cout << endl;
+}
