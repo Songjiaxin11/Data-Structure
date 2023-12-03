@@ -5,60 +5,6 @@
 using namespace std;
 
 // n d p只需要一个operands
-//  Function to handle negation
-bool handleNegation(Dlist<int> &stack)
-{
-    if (stack.isEmpty())
-    {
-        cout << "Not enough operands\n";
-        return false;
-    }
-
-    int operand = *stack.removeFront();
-
-    // Implement negation
-    // ...
-
-    return true;
-}
-
-// Function to handle printing
-bool handlePrint(Dlist<int> &stack)
-{
-    if (stack.isEmpty())
-    {
-        cout << "Not enough operands\n";
-        return false;
-    }
-
-    int topItem = *stack.removeFront();
-    cout << topItem << endl;
-
-    return true;
-}
-
-// Function to handle division
-bool handleDivision(Dlist<int> &stack)
-{
-    if (stack.isEmpty())
-    {
-        cout << "Not enough operands\n";
-        return false;
-    }
-
-    int divisor = *stack.removeFront();
-
-    if (divisor == 0)
-    {
-        cout << "Divide by zero\n";
-        return false;
-    }
-
-    // Implement division
-    // ...
-
-    return true;
-}
 
 int main()
 {
@@ -82,7 +28,7 @@ int main()
                 {
                     stack.insertFront(new int(-num));
                 }
-                else //case '-':
+                else // case '-':
                 {
                     a = stack.removeFront();
                     b = stack.removeFront();
@@ -115,6 +61,15 @@ int main()
                 //     break;
 
                 // two operands needed
+                case 'r':
+                {
+                    int *one = stack.removeFront();
+                    int *two = stack.removeFront();
+                    stack.insertFront(new int(*one));
+                    stack.insertFront(new int(*two));
+                }
+                    break;
+
                 case '+':
                     // Implement addition
                     a = stack.removeFront();
@@ -144,9 +99,17 @@ int main()
                 case 'n':
                     a = stack.removeFront();
                     stack.insertFront(new int(-(*a)));
-
                     break;
 
+                case 'd':
+                    if (!stack.isEmpty())
+                    {
+                        int *item = stack.removeFront();
+                        // cout << *item << endl;
+                        stack.insertFront(item);
+                        stack.insertFront(item);
+                    }
+                    break;
                     //  no operands needed
                 case 'c':
                     if (!stack.isEmpty())
@@ -178,7 +141,6 @@ int main()
                     if (!stack.isEmpty())
                     {
                         int *item = stack.removeFront();
-
                         cout << *item << endl;
                         stack.insertFront(item);
                     }
