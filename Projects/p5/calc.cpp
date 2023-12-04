@@ -1,7 +1,6 @@
 #include "dlist.h"
 #include <iostream>
 #include <cstdlib> // For atoi
-// #include <sstream> // For istringstream
 #include <string>
 using namespace std;
 
@@ -10,8 +9,8 @@ using namespace std;
 int main()
 {
     Dlist<int> stack;
-    int *a = NULL;
-    int *b = NULL;
+    // int *a = NULL;
+    // int *b = NULL;
     char operation;
     string input;
     bool isdig = false;
@@ -25,7 +24,7 @@ int main()
         // 如果input中第一个字符不是'-', 且是数字
         if (input[0] != '-' && input[0] >= '0' && input[0] <= '9')
         {
-            for (int i = 0; i < input.size(); i++)
+            for (int i = 0; i < static_cast<int>(input.size()); i++)
             {
                 if (input[i] < '0' || input[i] > '9')
                 {
@@ -49,7 +48,7 @@ int main()
             if (isdigit(input[pos + 1]))
             {
 
-                for (int i = 1; i < input.size(); i++)
+                for (int i = 1; i < static_cast<int>(input.size()); i++)
                 {
                     if (input[i] < '0' || input[i] > '9')
                     {

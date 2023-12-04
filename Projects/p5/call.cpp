@@ -1,6 +1,6 @@
 #include <iostream>
 #include <cstdlib> // For atoi
-#include "dlist_impl.h"
+// #include "dlist_impl.h"
 #include "dlist.h"
 using namespace std;
 
@@ -42,17 +42,17 @@ Status getStatus(const string &status)
 
 int main()
 {
-    int numCustomers;
-    string status_input;
-    cin >> numCustomers;
-    for (int i = 0; i < numCustomers; i++)
-    {
-        Customer *c = new Customer;
-        cin >> c->timeStamp;
-        cin >> c->name;
-        cin >> status_input;
-        c->status = getStatus(status_input);    
-        cin >> c->duration;
-    }
+    // int numCustomers;
+    // string status_input;
+    // cin >> numCustomers;
+    // for (int i = 0; i < numCustomers; i++)
+    // {
+    //     Customer *c = new Customer;
+    //     cin >> c->timeStamp;
+    //     cin >> c->name;
+    //     cin >> status_input;
+    //     c->status = getStatus(status_input);    
+    //     cin >> c->duration;
+    // }
     return 0;
 }

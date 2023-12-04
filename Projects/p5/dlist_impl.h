@@ -221,21 +221,21 @@ Dlist<T>::Dlist(const Dlist &l)
     }
 }
 
-template <class T>
-void Dlist<T>::print()
-{
-    node *cur = this->first;
-    bool isEnd = false;
-    while (cur && !isEnd)
-    {
-        if (cur == this->last)
-        {
-            isEnd = true;
-        }
-        cout << *(cur->op) << " " << flush;
-        cur = cur->next;
-    }
-    cout << endl;
-}
+// template <class T>
+// void Dlist<T>::print()
+// {
+//     node *cur = this->first;
+//     bool isEnd = false;
+//     while (cur && !isEnd)
+//     {
+//         if (cur == this->last)
+//         {
+//             isEnd = true;
+//         }
+//         cout << *(cur->op) << " " << flush;
+//         cur = cur->next;
+//     }
+//     cout << endl;
+// }
 
 #endif

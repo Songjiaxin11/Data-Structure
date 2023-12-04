@@ -1,17 +1,60 @@
 #include <iostream>
 #include <string>
 #include "dlist.h"
-
 using namespace std;
+/*
+Steps:
+1. Create a class Call ok
+2. 从cin中读取数据, 创建call对象, 并插入到对应的dlist中 ok
+每次tick 的开始, 输出Starting tick #<tick>
+3. 选择timestamps==tick number的人, 插入到dlist中 ok
+输出Call from Jeff a silver member  (按照出现顺序排序)
+4. if(agent不忙)
+{
+    if(有电话)
+    从最尊贵的开始回答, 输出Answering call from Jeff
+    然后他就一直开始忙了, 忙到duration结束
+else
+{
+    call,
+}
+}
+if(agent忙)
+{
+    不管时间, 继续接电话
+}
+同时间按照顺序, 不同时间, 按照尊贵程度
 
+*/
+enum Status
+{
+    platinum,
+    gold,
+    silver,
+    regular,
+};
+const char *status_name[] = {"platinum", "gold", "silver", "regular"};
+Status Current_Status(string &str)
+{
+    for (int i = 0; i < 4; i++)
+    {
+        if (str == status_name[i])
+        {
+            return Status(i);
+        }
+    }
+    return platinum;
+}
 class Call
 {
 public:
-    string name;
-    string status;
-    int duration;
-
-    Call(string n, string s, int d) : name(n), status(s), duration(d) {}
+    int timestamps = 0;
+    string name = "";
+    Status status = regular;
+    int duration = 0;
+    // Call();
+    Call(int t, string str, Status s, int d) : timestamps(t), name(str), status(s), duration(d) {}
+    // ~Call();
 };
 
 // Function prototypes
@@ -25,112 +68,79 @@ int main()
 
 void simulateCalls()
 {
-    Dlist<Call> platinum, gold, silver, regular;
+    Dlist<Call> *member[4] = {};
+    for (int i = 0; i < 4; i++)
+    {
+        member[i] = new Dlist<Call>; // remind to be delete
+    }
 
     int numEvents;
+    bool first_time = true;
     int tick = 0;
+    int finish = 0; // 回答完的时间
     cin >> numEvents;
 
-    int tickcnt = 0;
-    tickcnt = tick;
-
-    for (int i = 0; i < numEvents; ++i)     
+    // while (tick <= numEvents)
+    while(true)
     {
-        while (tickcnt <= tick)
+        // cout << endl; // delete it
+        cout << "Starting tick #" << tick << endl;
+        for (int i = 0; i < 4; ++i)
         {
-            int timestamp, duration;
+
+            int next_stamp, duration = 0;
             string name, status;
-
-            cin >> timestamp >> name >> status >> duration;
-            if (tickcnt == tick)
-                cout << "Starting tick #" << tick << endl;
-
-            if (status == "platinum")
+            Status sat;
+            if (numEvents > 0 && first_time)
             {
-                platinum.insertBack(new Call(name, status, duration));
-                if (tick == timestamp)
+                first_time = false;
+                cin >> next_stamp;
+            }
+            while (next_stamp == tick && numEvents > 0)
+            {
+                cin >> name;
+                cin >> status;
+                sat = Current_Status(status);
+                cin >> duration;
+                auto now = new Call(next_stamp, name, sat, duration); // remind delete
+                member[sat]->insertBack(now);
+
+                cout << "Call from " << now->name << " a " << status << " member" << endl;
+                numEvents--;
+                if (numEvents > 0)
                 {
-                    tickcnt++;
-                    cout << "Call from " << name << " a " << status << " member" << endl;
+
+                    cin >> next_stamp;
+                }
+             
+            } // reading ends
+               if (finish > tick)
+                {
+                    tick++;
+                    continue;//?
+                }
+            Call *currentCall = nullptr;
+            for (int i = 0; i < 4; i++)
+            {
+                if (!member[i]->isEmpty())
+                {
+                    currentCall = member[i]->removeFront();
+                    break;
                 }
             }
-            else if (status == "gold")
+            if (currentCall)
             {
-                gold.insertBack(new Call(name, status, duration));
-                if (tick == timestamp)
-                {
-                    tickcnt++;
-                    cout << "Call from " << name << " a " << status << " member" << endl;
-                }
-            }
-            else if (status == "silver")
-            {
-                silver.insertBack(new Call(name, status, duration));
-                if (tick == timestamp)
-                {
-                    tickcnt++;
-                    cout << "Call from " << name << " a " << status << " member" << endl;
-                }
-            }
-            else if (status == "regular")
-            {
-                regular.insertBack(new Call(name, status, duration));
-                if (tick == timestamp)
-                {
-                    tickcnt++;
-                    cout << "Call from " << name << " a " << status << " member" << endl;
-                }
-            }
-        }
-
-        int currentTime = 0;
-        Call *currentCall = nullptr;
-        int repeat = 0;
-        while (!(platinum.isEmpty() && gold.isEmpty() && silver.isEmpty() && regular.isEmpty()) && repeat == 0)
-        {
-            // cout << "Starting tick #" << currentTime << endl;
-
-            if (currentCall == nullptr)
-            {
-                if (!platinum.isEmpty())
-                {
-                    currentCall = platinum.removeFront();
-                }
-                else if (!gold.isEmpty())
-                {
-                    currentCall = gold.removeFront();
-                }
-                else if (!silver.isEmpty())
-                {
-                    currentCall = silver.removeFront();
-                }
-                else if (!regular.isEmpty())
-                {
-                    currentCall = regular.removeFront();
-                }
-
-                if (currentCall != nullptr)
-                {
-                    cout << "Answering call from " << currentCall->name << endl;
-                    repeat = 1;
-                }
-            }
-        } // while answer
-
-        if (currentCall != nullptr)
-        {
-            currentCall->duration--;
-
-            if (currentCall->duration == 0)
-            {
+                cout << "Answering call from " << currentCall->name << endl;
+                finish += currentCall->duration;
                 delete currentCall;
-                currentCall = nullptr;
             }
-        }
+            if (finish == tick)
+            {
+                break;
+            }
+            tick++;
+        } // next people end
 
-        currentTime++;
-        tick++;
-    }
+    } // next round end
+
 }
-
-// cout << "Starting tick #" << currentTime << endl; // Print the last tick
