@@ -1,8 +1,8 @@
 #include "dlist.h"
-// #include "dlist_impl.h"
 #include <iostream>
 #include <cstdlib> // For atoi
-#include <sstream> // For istringstream
+// #include <sstream> // For istringstream
+#include <string>
 using namespace std;
 
 // n d p只需要一个operands
@@ -14,39 +14,104 @@ int main()
     int *b = NULL;
     char operation;
     string input;
-    bool once = false;
-    bool twice = false;
+    bool isdig = false;
+    // bool twice = false;
     int count = 0;
 
     while (getline(cin, input) && input != "q")
     {
-        istringstream iss(input);
+        size_t pos = 0;
 
-        // 如果input中第一个字符不是'-'
+        // 如果input中第一个字符不是'-', 且是数字
         if (input[0] != '-' && input[0] >= '0' && input[0] <= '9')
         {
-            int num = 0;
-            if (iss >> num)
+            for (int i = 0; i < input.size(); i++)
             {
+                if (input[i] < '0' || input[i] > '9')
+                {
+                    cout << "Bad input\n";
+                    isdig = false;
+                    break;
+                }
+                isdig = true;
+            }
+            if (isdig)
+            {
+                int num = stoi(input, &pos);
                 stack.insertFront(new int(num));
-                // 如何使用不new的方式insertFront?
                 count++;
             }
         }
+        // 如果input中第一个字符是'-', 且是数字
         else if (input[0] == '-')
         {
-            while (iss >> operation)
+
+            if (isdigit(input[pos + 1]))
             {
-                if (operation == '-')
+
+                for (int i = 1; i < input.size(); i++)
                 {
-                    // Handle negative numbers
-                    int num;
-                    if (iss >> num)
+                    if (input[i] < '0' || input[i] > '9')
                     {
-                        stack.insertFront(new int(-num));
-                        count++;
+                        cout << "Bad input\n";
+                        isdig = false;
+                        break;
                     }
-                    else // case '-':
+                    isdig = true;
+                }
+                if (isdig)
+                {
+                    int num = stoi(input.substr(pos + 1), &pos);
+                    stack.insertFront(new int(-num));
+                    count++;
+                }
+            }
+
+            else // case '-':是符号
+            {
+                if (input.size() != 1)
+                {
+                    cout << "Bad input\n";
+                    break;
+                }
+                else
+                {
+                    if (count < 2)
+                    {
+                        cout << "Not enough operands\n";
+                    }
+                    else
+                    {
+                        int *m = stack.removeFront();
+                        int *n = stack.removeFront();
+                        int *result = new int((*m) - (*n));
+                        stack.insertFront(result);
+                        delete m;
+                        delete n;
+                        count--;
+                    }
+                    // break;
+                }
+            }
+        } //'-' operation ends
+
+        else // case '+', '*', '/', 'r', 'n', 'd', 'p', 'c', 'a'
+        {
+            if (input.size() != 1)
+            {
+                cout << "Bad input\n";
+                // break;
+            }
+            else
+            {
+                while (pos < input.size())
+                {
+                    operation = input[pos];
+                    switch (operation)
+                    {
+
+                    // two operands needed
+                    case 'r':
                     {
                         if (count < 2)
                         {
@@ -54,175 +119,162 @@ int main()
                         }
                         else
                         {
-                            a = stack.removeFront();
-                            b = stack.removeFront();
-                            stack.insertFront(new int(*a - *b));
+                            int *one = stack.removeFront();
+                            int *two = stack.removeFront();
+                            stack.insertFront(new int(*one));
+                            stack.insertFront(new int(*two));
+                            delete one;
+                            delete two;
+                        }
+                    }
+                    break;
+
+                    case '+':
+                        // Implement addition
+                        if (count < 2)
+                        {
+                            cout << "Not enough operands\n";
+                        }
+                        else
+                        {
+                            int *m = stack.removeFront();
+                            int *n = stack.removeFront();
+                            int *result = new int((*m) + (*n));
+                            stack.insertFront(result);
+                            delete m;
+                            delete n;
                             count--;
                         }
                         break;
-                    }
-                }
-            }
-        }
-        // if (operation == '+' || operation == '*' || operation == '*' || operation == '/' || operation == 'n' || operation == 'd' || operation == 'r' || operation == 'p' || operation == 'c' || operation == 'a')
-        else
-        {
-            while (iss >> operation)
-            {
-                switch (operation)
-                {
 
-                // two operands needed
-                case 'r':
-                {
-                    if (count < 2)
-                    {
-                        cout << "Not enough operands\n";
-                    }
-                    else
-                    {
-                        int *one = stack.removeFront();
-                        int *two = stack.removeFront();
-                        stack.insertFront(new int(*one));
-                        stack.insertFront(new int(*two));
-                    }
-                }
-                break;
-
-                case '+':
-                    // Implement addition
-                    if (count < 2)
-                    {
-                        cout << "Not enough operands\n";
-                    }
-                    else
-                    {
-                        a = stack.removeFront();
-                        b = stack.removeFront();
-                        int result = *a + *b;
-                        int *r = &result;
-                        // stack.insertFront(new int(*a + *b));
-                        stack.insertFront(r);
-                        count--;
-                    }
-                    break;
-
-                case '*':
-                    // Implement multiplication
-                    if (count < 2)
-                    {
-                        cout << "Not enough operands\n";
-                    }
-                    else
-                    {
-                        a = stack.removeFront();
-                        b = stack.removeFront();
-                        int result = *a * *b;
-                        stack.insertFront(new int(*a * *b));
-                        count--;
-                    }
-                    break;
-                case '/':
-                    // Implement division
-                    if (count < 2)
-                    {
-                        cout << "Not enough operands\n";
-                    }
-                    else
-                    {
-                        a = stack.removeFront();
-                        b = stack.removeFront();
-                        // stack.insertFront(new int(*a / *b));
-                        stack.insertFront(new int(*a / *b));
-                        count--;
-                    }
-                    break;
-
-                    // one operand needed n d p
-                case 'n':
-                    if (count < 1)
-                    {
-                        cout << "Not enough operands\n";
-                    }
-                    else
-                    {
-                        a = stack.removeFront();
-                        stack.insertFront(new int(-(*a)));
-                    }
-                    break;
-
-                case 'd': // 复制
-                    if (count < 1)
-                    {
-                        cout << "Not enough operands\n";
-                    }
-                    else
-                    {
-                        if (!stack.isEmpty())
+                    case '*':
+                        // Implement multiplication
+                        if (count < 2)
                         {
-                            int *item = stack.removeFront();
-                            // cout << *item << endl;
-                            stack.insertFront(item);
-                            stack.insertFront(item);
-                            count++;
+                            cout << "Not enough operands\n";
+                        }
+                        else
+                        {
+                            int *m = stack.removeFront();
+                            int *n = stack.removeFront();
+                            int *result = new int((*m) * (*n));
+                            stack.insertFront(result);
+                            delete m;
+                            delete n;
+                            count--;
+                        }
+                        break;
+                    case '/':
+                        // Implement division
+                        if (count < 2)
+                        {
+                            cout << "Not enough operands\n";
+                        }
+                        else
+                        {
+                            int *m = stack.removeFront();
+                            if (*m == 0)
+                            {
+                                delete m;
+                                cout << "Divide by zero\n";
+                            }
+                            else
+                            {
+
+                                int *n = stack.removeFront();
+                                int *result = new int(*n / *m);
+                                stack.insertFront(result);
+                                delete m;
+                                delete n;
+                                count--;
+                            }
+                        }
+                        break;
+
+                        // one operand needed n d p
+                    case 'n':
+                        if (count < 1)
+                        {
+                            cout << "Not enough operands\n";
+                        }
+                        else
+                        {
+                            int *aa = stack.removeFront();
+                            stack.insertFront(new int(-(*aa)));
+                            delete aa;
+                        }
+                        break;
+
+                    case 'd': // 复制
+                        if (count < 1)
+                        {
+                            cout << "Not enough operands\n";
+                        }
+                        else
+                        {
+                            if (!stack.isEmpty())
+                            {
+                                int *item = stack.removeFront();
+                                // cout << *item << endl;
+                                stack.insertFront(new int(*item));
+                                stack.insertFront(new int(*item));
+                                delete item;
+                                count++;
+                            }
+                        }
+                        break;
+
+                    case 'p':
+                    {
+                        if (count < 1)
+                        {
+                            cout << "Not enough operands\n";
+                        }
+                        else
+                        {
+                            if (!stack.isEmpty())
+                            {
+                                int *item = stack.removeFront();
+                                cout << *item << endl;
+                                stack.insertFront(new int(*item));
+                                delete item;
+                            }
                         }
                     }
                     break;
 
-                case 'p':
-                {
-                    if (count < 1)
-                    {
-                        cout << "Not enough operands\n";
-                    }
-                    else
-                    {
-                        if (!stack.isEmpty())
+                        //  no operands needed caq
+                    case 'c':
+                        while (!stack.isEmpty())
                         {
-                            int *item = stack.removeFront();
-                            cout << *item << endl;
-                            stack.insertFront(item);
+                            int *kk = stack.removeFront();
+                            delete kk;
                         }
-                    }
-                }
-                break;
+                        count = 0;
+                        break;
 
-                    //  no operands needed caq
-                case 'c':
-                    if (!stack.isEmpty())
-                        stack.removeFront();
-                    count = 0;
-                    break;
-
-                case 'a':
-                {
-                    Dlist<int> *stacl_duplicator = &stack;
-                    // Dlist<int> cur(stack); // 先复制一份
-                    Dlist<int> cur(*stacl_duplicator); // 先复制一份
-                    while (!cur.isEmpty())
+                    case 'a':
                     {
-                        int *item = cur.removeFront();
-                        if (item != nullptr)
+
+                        Dlist<int> cur(stack); // 先复制一份
+                        while (!cur.isEmpty())
                         {
+                            int *item = cur.removeFront();
                             cout << *item << " " << flush;
+                            delete item;
                         }
+                        cout << endl;
                     }
-                    cout << endl;
-                    // remove cur all
-                    while (!cur.isEmpty())
-                    {
-                        cur.removeFront();
-                    }
-                }
-                break;
+                    break;
 
-                default:
-                    cout << "Bad input\n";
-                } // switch ends
-            }     // else ends
-        }         // while ends
-    }             // else ends
+                    default:
+                        cout << "Bad input\n";
+                    } // switch ends
+                    pos++;
+                } // else ends
+            }     // operator number else ends
+        }         // operator type else ends
                   // bit while ends
-
+    }             // while ends
     return 0;
 }
