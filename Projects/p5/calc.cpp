@@ -1,4 +1,5 @@
 #include "dlist.h"
+// #include "dlist_impl.h"
 #include <iostream>
 #include <cstdlib> // For atoi
 #include <sstream> // For istringstream
@@ -131,6 +132,7 @@ int main()
                     {
                         a = stack.removeFront();
                         b = stack.removeFront();
+                        // stack.insertFront(new int(*a / *b));
                         stack.insertFront(new int(*a / *b));
                         count--;
                     }

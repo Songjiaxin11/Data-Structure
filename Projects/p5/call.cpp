@@ -53,7 +53,6 @@ int main()
         cin >> status_input;
         c->status = getStatus(status_input);    
         cin >> c->duration;
-        
     }
     return 0;
 }
