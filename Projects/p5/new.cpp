@@ -1,146 +1,155 @@
 #include <iostream>
 #include <string>
 #include "dlist.h"
+
 using namespace std;
-/*
-Steps:
-1. Create a class Call ok
-2. 从cin中读取数据, 创建call对象, 并插入到对应的dlist中 ok
-每次tick 的开始, 输出Starting tick #<tick>
-3. 选择timestamps==tick number的人, 插入到dlist中 ok
-输出Call from Jeff a silver member  (按照出现顺序排序)
-4. if(agent不忙)
-{
-    if(有电话)
-    从最尊贵的开始回答, 输出Answering call from Jeff
-    然后他就一直开始忙了, 忙到duration结束
-else
-{
-    call,
-}
-}
-if(agent忙)
-{
-    不管时间, 继续接电话
-}
-同时间按照顺序, 不同时间, 按照尊贵程度
 
-*/
-enum Status
+// record a call as an event
+struct Event
 {
-    platinum,
-    gold,
-    silver,
-    regular,
+    int timeStamp;
+    string name;
+    string status;
+    int duration;
 };
-const char *status_name[] = {"platinum", "gold", "silver", "regular"};
-Status Current_Status(string &str)
+
+/**
+ * @brief Check if there is a call at this tick
+ *
+ * @param eventList
+ * @param tick
+ * @return true
+ * @return false
+ */
+bool checkCall(Dlist<Event> &eventList, int tick)
 {
-    for (int i = 0; i < 4; i++)
+    if (eventList.isEmpty())
+        return false;
+
+    // Read events at this tick
+    Event *tempEvent = eventList.removeFront();
+    if (tempEvent->timeStamp > tick)
     {
-        if (str == status_name[i])
-        {
-            return Status(i);
-        }
+        eventList.insertFront(tempEvent);
+        return false;
     }
-    return platinum;
-}
-class Call
-{
-public:
-    int timestamps = 0;
-    string name = "";
-    Status status = regular;
-    int duration = 0;
-    // Call();
-    Call(int t, string str, Status s, int d) : timestamps(t), name(str), status(s), duration(d) {}
-    // ~Call();
-};
 
-// Function prototypes
-void simulateCalls();
+    // insert back to eventList
+    eventList.insertFront(tempEvent);
+    return true;
+}
 
 int main()
 {
-    simulateCalls();
-    return 0;
-}
+    // construct four lists of events and one for printing
+    Dlist<Event> regularList;
+    Dlist<Event> silverList;
+    Dlist<Event> goldList;
+    Dlist<Event> platinumList;
+    Dlist<Event> printList;
 
-void simulateCalls()
-{
-    Dlist<Call> *member[4] = {};
-    for (int i = 0; i < 4; i++)
-    {
-        member[i] = new Dlist<Call>; // remind to be delete
-    }
-
+    // read in the events
     int numEvents;
-    bool first_time = true;
-    int tick = 0;
-    int finish = 0; // 回答完的时间
     cin >> numEvents;
-
-    // while (tick <= numEvents)
-    while(true)
+    if (numEvents == 0) // no events, print tick #0 and exit
     {
-        // cout << endl; // delete it
-        cout << "Starting tick #" << tick << endl;
-        for (int i = 0; i < 4; ++i)
+        cout << "Starting tick #0" << endl;
+        return 0;
+    }
+    for (int i = 0; i < numEvents; i++)
+    {
+        Event *event = new Event;
+        for (int j = 0; j < 4; j++)
         {
-
-            int next_stamp, duration = 0;
-            string name, status;
-            Status sat;
-            if (numEvents > 0 && first_time)
+            switch (j)
             {
-                first_time = false;
-                cin >> next_stamp;
-            }
-            while (next_stamp == tick && numEvents > 0)
-            {
-                cin >> name;
-                cin >> status;
-                sat = Current_Status(status);
-                cin >> duration;
-                auto now = new Call(next_stamp, name, sat, duration); // remind delete
-                member[sat]->insertBack(now);
-
-                cout << "Call from " << now->name << " a " << status << " member" << endl;
-                numEvents--;
-                if (numEvents > 0)
-                {
-
-                    cin >> next_stamp;
-                }
-             
-            } // reading ends
-               if (finish > tick)
-                {
-                    tick++;
-                    continue;//?
-                }
-            Call *currentCall = nullptr;
-            for (int i = 0; i < 4; i++)
-            {
-                if (!member[i]->isEmpty())
-                {
-                    currentCall = member[i]->removeFront();
-                    break;
-                }
-            }
-            if (currentCall)
-            {
-                cout << "Answering call from " << currentCall->name << endl;
-                finish += currentCall->duration;
-                delete currentCall;
-            }
-            if (finish == tick)
-            {
+            case 0:
+                cin >> event->timeStamp;
+                break;
+            case 1:
+                cin >> event->name;
+                break;
+            case 2:
+                cin >> event->status;
+                break;
+            case 3:
+                cin >> event->duration;
+                break;
+            default:
                 break;
             }
-            tick++;
-        } // next people end
+        }
+        if (event->status == "regular")
+            regularList.insertBack(event);
+        else if (event->status == "silver")
+            silverList.insertBack(event);
+        else if (event->status == "gold")
+            goldList.insertBack(event);
+        else if (event->status == "platinum")
+            platinumList.insertBack(event);
 
-    } // next round end
+        // event for print
+        Event *event_Print = new Event(*event);
+        printList.insertBack(event_Print);
+    }
 
+    // simulate the events
+    int tick = 0;
+    int inQueue = 0;
+    Event *currentEvent = NULL;
+    bool busy = false;
+    while (true)
+    {
+        if (printList.isEmpty() && inQueue == 0 && currentEvent == NULL)
+            break;
+        cout << "Starting tick #" << tick << endl;
+
+        // check whether busy
+        if (currentEvent == NULL)
+            busy = false;
+        else if (currentEvent->duration == 0)
+        {
+            busy = false;
+            delete currentEvent;
+            currentEvent = NULL;
+            if (inQueue > 0)
+                inQueue--;
+        }
+        else if (currentEvent->duration > 0)
+            busy = true;
+
+        // print call and add to Queue
+        while (checkCall(printList, tick))
+        {
+            Event *tempEvent = printList.removeFront();
+            cout << "Call from " << tempEvent->name << " a " << tempEvent->status << " member" << endl;
+            delete tempEvent;
+            inQueue++;
+        }
+
+        // if not busy, get the next event
+        if (!busy)
+        {
+            if (checkCall(platinumList, tick))
+                currentEvent = platinumList.removeFront();
+            else if (checkCall(goldList, tick))
+                currentEvent = goldList.removeFront();
+            else if (checkCall(silverList, tick))
+                currentEvent = silverList.removeFront();
+            else if (checkCall(regularList, tick))
+                currentEvent = regularList.removeFront();
+            if (currentEvent != NULL)
+            {
+                cout << "Answering call from " << currentEvent->name << endl;
+                currentEvent->duration--;
+            }
+        }
+        else
+        {
+            if (currentEvent != NULL)
+                currentEvent->duration--;
+        }
+        tick++;
+    }
+    return 0;
 }
